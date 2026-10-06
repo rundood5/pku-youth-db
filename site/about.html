@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>关于本库 · 重要讲话与最新提法数据库</title>
+<meta name="description" content="著录字段说明、数据质量核对结果、新增期次的操作步骤与技术说明。">
+<meta name="theme-color" content="#0f1b33">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f1b33'/%3E%3Crect x='0' y='0' width='4' height='32' fill='%23b11d24'/%3E%3Ctext x='17' y='23' font-size='18' font-family='serif' font-weight='bold' fill='%23ffffff' text-anchor='middle'%3E论%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">
+          <svg class="ic" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">重要讲话与最新提法数据库</span>
+          <span class="brand-sub">北大青年纵横 · 学习资料库</span>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="展开导航菜单" aria-expanded="false">
+        <svg class="ic ic-lg" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <nav class="nav-links" aria-label="主导航">
+        <a class="nav-link" href="index.html">首页</a>
+        <a class="nav-link" href="database.html">重要讲话数据库</a>
+        <a class="nav-link" href="leaders.html">领导人论述库</a>
+        <a class="nav-link" href="search.html">全库检索</a>
+        <a class="nav-link" href="about.html" aria-current="page">关于本库</a>
+        <a class="nav-cta" href="search.html">
+          <svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          检索
+        </a>
+      </nav>
+    </div>
+  </header>
+
+<main id="main">
+  <section class="doc-head">
+    <div class="wrap">
+      <div class="crumb">
+        <a href="index.html">首页</a><span class="sep">/</span><span>关于本库</span>
+      </div>
+      <h1>关于本库与数据说明</h1>
+      <p class="lede">
+        本库由《重要讲话与最新提法数据库》各期 Word 文件与领导人论述汇总表自动解析生成，
+        字段、期号与原文链接均来自源文件，未作改写。
+      </p>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="wrap wrap-narrow">
+      <h2 class="section-title" id="fields">一、著录字段</h2>
+      <p class="section-desc">每条内容固定著录以下字段，与源 Word 文件中的“标题：/ 发布时间：”等标签一一对应。</p>
+      <div class="table-wrap" style="margin-top:20px">
+        <div class="table-scroll">
+          <table class="data" style="min-width:0">
+            <thead>
+              <tr><th scope="col">字段</th><th scope="col">说明</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>标题</td><td>文章或文件的正式标题</td></tr>
+              <tr><td>发布时间</td><td>原文发布时间，用于时间排序与筛选</td></tr>
+              <tr><td>发布来源</td><td>发布机关或媒体，如新华社、中国政府网、《求是》</td></tr>
+              <tr><td>原文链接</td><td>指向原文的官方网址，可直接跳转</td></tr>
+              <tr><td>关键词</td><td>便于检索的提法标签，分号分隔</td></tr>
+              <tr><td>观点速览</td><td>该条内容的核心观点摘要</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h2 class="section-title" id="quality" style="margin-top:48px">二、数据质量核对</h2>
+      <p class="section-desc">
+        脚本在解析时发现以下 19 处需要人工确认的问题，其中
+        <span class="tag tag-amber">5 处</span>属于占位符、期号重复或跳号，
+        <span class="tag tag-navy">14 处</span>属于报头期号与文件名期号相差 1 的系统性偏差。
+        这些问题来自源 Word 文件的报头或文件名本身，脚本<strong>未做任何自动改写</strong>，仅如实记录；
+        建议在源文件中确认后重新生成。
+      </p>
+      <div class="table-wrap" style="margin-top:20px">
+        <div class="table-scroll">
+          <table class="data" style="min-width:820px">
+            <thead>
+              <tr>
+                <th scope="col">类型</th><th scope="col">期次</th><th scope="col">日期</th>
+                <th scope="col">源文件</th><th scope="col">说明</th>
+              </tr>
+            </thead>
+            <tbody id="qualityBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <h2 class="section-title" id="update" style="margin-top:48px">三、如何新增一期</h2>
+      <p class="section-desc">本库是“丢文件即入库”的结构，新出一期时不需要改任何代码。</p>
+      <div class="acc" style="margin-top:20px">
+        <button class="acc-head" aria-expanded="true">
+          <span class="lead"><span class="idx">1</span><span>把新的 Word 文件放进 source 目录</span></span>
+          <svg class="ic" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="acc-body">
+          <p>新一期的《重要讲话与最新提法数据库》Word 文件放入
+            <code>source/2.北大青年纵横/主文件/</code>，命名保持与现有文件一致即可
+            （如 <code>重要讲话与最新提法数据库-总第23期.docx</code>）。
+            领导人论述、重要文章如有更新，也按原文件名替换 <code>source/1.党和国家领导人…</code> 下的文件。</p>
+        </div>
+      </div>
+      <div class="acc" style="margin-top:14px">
+        <button class="acc-head" aria-expanded="true">
+          <span class="lead"><span class="idx">2</span><span>重新运行解析与生成脚本</span></span>
+          <svg class="ic" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="acc-body">
+          <p>在项目根目录执行两条命令，网站就会自动多出新的一期：</p>
+          <pre style="background:var(--navy-900);color:#e8eefc;padding:16px 18px;border-radius:10px;overflow-x:auto;font-size:13px;line-height:1.8;font-family:var(--font-mono)">python tools/extract.py
+python tools/build.py</pre>
+          <p style="margin-top:12px">第一条解析 Word 生成 <code>site/data/content.json</code>，
+            第二条把它写成网站数据与新页面。脚本会打印解析自检表，逐期显示条目数与数据质量提示。</p>
+        </div>
+      </div>
+      <div class="acc" style="margin-top:14px">
+        <button class="acc-head" aria-expanded="true">
+          <span class="lead"><span class="idx">3</span><span>本地预览</span></span>
+          <svg class="ic" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="acc-body">
+          <p>直接双击 <code>site/index.html</code> 即可离线浏览；
+            也可以在本项目根目录启动一个本地服务后访问 <code>http://127.0.0.1:8123/</code>：</p>
+          <pre style="background:var(--navy-900);color:#e8eefc;padding:16px 18px;border-radius:10px;overflow-x:auto;font-size:13px;line-height:1.8;font-family:var(--font-mono)">python -m http.server 8123 --directory site</pre>
+        </div>
+      </div>
+
+      <h2 class="section-title" id="tech" style="margin-top:48px">四、技术说明</h2>
+      <div class="stats" style="margin-top:20px;grid-template-columns:repeat(3,minmax(0,1fr))">
+        <div class="stat">
+          <div class="stat-num" style="font-size:26px">纯静态</div>
+          <div class="stat-label">HTML + CSS + 原生 JS，无框架、无构建依赖</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" style="font-size:26px">可离线</div>
+          <div class="stat-label">数据内嵌于 data/db.js，双击即可打开</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" style="font-size:26px">零外链</div>
+          <div class="stat-label">不依赖任何外部字体、图片或 CDN</div>
+        </div>
+      </div>
+
+      <div class="notice notice-info" style="margin-top:32px">
+        <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+        <div><strong>版权与使用</strong>：本库内容整理自公开权威来源（中国政府网、新华社、《人民日报》《求是》、
+          共青团中央等），原文著作权归原作者与发布机构所有，本站仅作学习研究与工作参考使用。</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand">
+            <span class="brand-mark" aria-hidden="true">
+              <svg class="ic" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg>
+            </span>
+            <span class="brand-text">
+              <span class="brand-name">重要讲话与最新提法数据库</span>
+              <span class="brand-sub">北大青年纵横</span>
+            </span>
+          </div>
+          <p>系统整理党和国家领导人关于共青团及青年工作的重要论述、最新重要讲话与政策文件，
+             按期次归档、逐条著录，供团学工作与理论学习检索使用。</p>
+        </div>
+        <div>
+          <h4>站内导航</h4>
+          <div class="footer-links">
+            <a class="footer-link" href="database.html">
+              <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+              <span>重要讲话数据库</span>
+            </a>
+            <a class="footer-link" href="leaders.html">
+              <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+              <span>领导人论述库</span>
+            </a>
+            <a class="footer-link" href="search.html">
+              <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+              <span>全库检索</span>
+            </a>
+            <a class="footer-link" href="about.html">
+              <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+              <span>关于本库与数据说明</span>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h4>友情链接</h4>
+          <div class="footer-links">
+            <a class="footer-link" href="http://jhsjk.people.cn/" target="_blank" rel="noopener noreferrer">
+              <svg class="ic" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4 11 13"/><path d="M18 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/></svg>
+              <span>习近平讲话数据库<small>人民网·习近平系列重要讲话数据库</small></span>
+            </a>
+            <a class="footer-link" href="http://paper.people.com.cn/" target="_blank" rel="noopener noreferrer">
+              <svg class="ic" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4 11 13"/><path d="M18 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/></svg>
+              <span>人民日报数据库<small>《人民日报》图文数据库</small></span>
+            </a>
+            <a class="footer-link" href="https://www.gqt.org.cn/" target="_blank" rel="noopener noreferrer">
+              <svg class="ic" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4 11 13"/><path d="M18 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/></svg>
+              <span>共青团中央<small>中国共产主义青年团中央委员会</small></span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span data-year>2026</span> 共青团北京大学委员会 · 数据整理自公开权威来源，仅供学习研究使用</span>
+        <span class="tag">数据更新：2026-10-06</span>
+      </div>
+    </div>
+  </footer>
+
+  <button class="to-top" type="button" aria-label="返回顶部">
+    <svg class="ic" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="m6 11 6-6 6 6"/></svg>
+  </button>
+
+<script src="data/db.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
