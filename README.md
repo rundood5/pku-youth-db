@@ -19,6 +19,26 @@ site\index.html
 python -m http.server 8123 --directory site
 ```
 
+### 要发给别人看，打包 `site` 就够了
+
+别人不需要 `tools/`、`source/`、`demo/`（那些是维护用的，对方拿到没用）。
+**只需要 `site` 这一个文件夹**——它自带数据、零外部依赖、可离线打开。
+
+已经打好的包在 `dist/`：
+
+| 文件 | 用途 |
+| --- | --- |
+| `dist/北大青年纵横-学习资料库-网站.zip` | 中文名，日常发给同学同事（内含《使用说明.txt》）|
+| `dist/pku-youth-db-website.zip` | 纯英文名，走邮件或跨系统传输时用（避免中文文件名乱码）|
+
+自己重新打包的话，注意**解压后第一层必须直接是 `index.html`**，
+否则对方会看到一层多余文件夹而找不到入口。
+
+> ⚠️ 提醒对方：**不要只把 `index.html` 单独拿出来**，
+> 样式在 `assets/`、数据在 `data/`，单发一个文件会打开成白屏。
+>
+> ⚠️ 手机无法直接打开本地 html 文件，要让对方用手机看，必须走 `DEPLOY.md` 的上网方案。
+
 网站共 7 个页面：
 
 | 页面 | 文件 | 内容 |
@@ -174,7 +194,7 @@ D:\demo\
 │  │     ├─ 1习近平总书记关于共青团与青年工作重要文章汇总.docx
 │  │     └─ 2习近平总书记对教育工作、青年群体的指示、寄语与回信.docx
 │  └─ 2.北大青年纵横\主文件\          重要讲话与最新提法数据库-总第1~20期.docx
-├─ site\                          网站（交付物）
+├─ dist\                          发给别人的压缩包（只含 site 内容 + 使用说明）\n├─ site\                          网站本体（交付物）
 │  ├─ index.html  database.html  issue.html  leaders.html
 │  ├─ search.html  about.html  404.html
 │  ├─ assets\style.css  assets\app.js
