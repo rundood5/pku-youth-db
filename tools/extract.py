@@ -728,8 +728,10 @@ def main():
 
     data = {
         "site": {
-            "title": "重要讲话与最新提法数据库",
-            "subtitle": "北大青年纵横",
+            # title 是网站名称（品牌），subtitle 是站内数据库模块的名称；
+            # 两者含义不同，页面上的导航栏/页脚用 title，数据库模块用 subtitle。
+            "title": "北大青年纵横",
+            "subtitle": "重要讲话与最新提法数据库",
             "org": "共青团北京大学委员会",
             "generated": date.today().isoformat(),
             "footerLinks": FOOTER_LINKS,

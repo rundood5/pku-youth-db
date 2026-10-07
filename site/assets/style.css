@@ -327,16 +327,21 @@ table {
 }
 .brand-name {
   font-family: var(--font-serif);
-  font-size: 16.5px;
+  font-size: 19px;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
 }
 .brand-sub {
   font-size: 11px;
   color: var(--navy-300);
   letter-spacing: 0.16em;
+  white-space: nowrap;
   text-transform: uppercase;
 }
+
+/* 首页大标题的排版规则见"顶部导航"一节之后的 .hero h1（那里离品牌名更近）。
+   站名只有四个字，用疏排（letter-spacing + text-indent 抵消末字右侧空白）居中感更稳。 */
 
 .nav-links {
   display: flex;
@@ -471,9 +476,10 @@ table {
 }
 
 .hero h1 {
-  font-size: clamp(30px, 4.4vw, 51px);
-  line-height: 1.22;
-  letter-spacing: 0.015em;
+  font-size: clamp(38px, 5.6vw, 66px);
+  line-height: 1.18;
+  letter-spacing: 0.16em;
+  text-indent: 0.16em;
   margin-bottom: 20px;
 }
 .hero h1 em {
@@ -2045,7 +2051,8 @@ td.c-quote .q + .q {
     min-width: 0;
   }
   .brand-name {
-    font-size: 14.5px;
+    font-size: 16.5px;
+    letter-spacing: 0.08em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

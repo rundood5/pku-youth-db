@@ -45,7 +45,20 @@ FAVICON = (
     "%3Crect width='32' height='32' rx='7' fill='%230f1b33'/%3E"
     "%3Crect x='0' y='0' width='4' height='32' fill='%23b11d24'/%3E"
     "%3Ctext x='17' y='23' font-size='18' font-family='serif' font-weight='bold'"
-    " fill='%23ffffff' text-anchor='middle'%3E论%3C/text%3E%3C/svg%3E"
+    " fill='%23ffffff' text-anchor='middle'%3E青%3C/text%3E%3C/svg%3E"
+)
+
+# 网站名称（品牌）与其中的数据库模块名称，两者含义不同，不要混用：
+#   SITE_NAME   —— 整个网站的名字，出现在导航栏、页脚、浏览器标签
+#   DB_NAME     —— 站内"重要讲话与最新提法数据库"这个模块的名字，也是源 Word 文件的实际名称
+SITE_NAME = "北大青年纵横"
+DB_NAME = "重要讲话与最新提法数据库"
+SITE_TAGLINE = "学习资料库"
+ORG_NAME = "共青团北京大学委员会"
+
+META_DESC = (
+    "北大青年纵横：收录党和国家领导人关于共青团与青年工作的重要论述，"
+    "以及《重要讲话与最新提法数据库》各期政策文件与权威文章，支持关键词检索与原文跳转。"
 )
 
 
@@ -86,8 +99,8 @@ def nav_html(active: str) -> str:
           <svg class="ic" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg>
         </span>
         <span class="brand-text">
-          <span class="brand-name">重要讲话与最新提法数据库</span>
-          <span class="brand-sub">北大青年纵横 · 学习资料库</span>
+          <span class="brand-name">北大青年纵横</span>
+          <span class="brand-sub">学习资料库</span>
         </span>
       </a>
       <button class="nav-toggle" type="button" aria-label="展开导航菜单" aria-expanded="false">
@@ -123,8 +136,8 @@ def footer_html(site_meta: dict) -> str:
               <svg class="ic" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg>
             </span>
             <span class="brand-text">
-              <span class="brand-name">重要讲话与最新提法数据库</span>
-              <span class="brand-sub">北大青年纵横</span>
+              <span class="brand-name">北大青年纵横</span>
+              <span class="brand-sub">学习资料库</span>
             </span>
           </div>
           <p>系统整理党和国家领导人关于共青团及青年工作的重要论述、最新重要讲话与政策文件，
@@ -207,11 +220,11 @@ def page_index(data: dict) -> str:
     <div class="wrap hero-grid">
       <div>
         <span class="eyebrow"><span class="eyebrow-dot"></span>数据持续更新 · 已归档 %(issueCount)d 期</span>
-        <h1>把党和国家领导人的<br><em>重要讲话与最新提法</em><br>整理成一座可检索的库</h1>
+        <h1>北大青年纵横</h1>
         <p class="hero-lede">
-          收录习近平总书记及历届党和国家领导人关于共青团与青年工作的重要论述，
-          按期次归档《重要讲话与最新提法数据库》所涉政策文件、党报党刊文章与权威发布，
-          逐条著录标题、时间、来源、原文链接、关键词与观点速览。
+          这里是共青团北京大学委员会的学习资料库。收录党和国家领导人关于共青团与青年工作的重要论述，
+          按期次归档《重要讲话与最新提法数据库》各期所涉政策文件、党报党刊文章与权威发布，
+          逐条著录标题、时间、来源、原文链接、关键词与观点速览，可全文检索、可直达原文。
         </p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="database.html">
@@ -367,8 +380,8 @@ def page_index(data: dict) -> str:
         "dateRangeText": cn_range(s["dateRange"][0], s["dateRange"][1]),
     }
     return shell(
-        "重要讲话与最新提法数据库 · 北大青年纵横",
-        "收录党和国家领导人关于共青团与青年工作的重要论述，以及《重要讲话与最新提法数据库》全部期次的政策文件与权威文章，支持关键词检索与原文跳转。",
+        "北大青年纵横 · 学习资料库",
+        META_DESC,
         "index.html",
         body,
         data["site"],
@@ -450,7 +463,7 @@ def page_database(data: dict) -> str:
         "to": cn_date(s["dateRange"][1]),
     }
     return shell(
-        "重要讲话数据库 · 重要讲话与最新提法数据库",
+        "重要讲话数据库 · 北大青年纵横",
         "按期次浏览《重要讲话与最新提法数据库》全部内容，支持分类筛选、关键词检索与时间排序。",
         "database.html",
         body,
@@ -504,7 +517,7 @@ def page_issue(data: dict) -> str:
   </section>
 """ % {"n": data["stats"]["issueCount"]}
     return shell(
-        "期次详情 · 重要讲话与最新提法数据库",
+        "期次详情 · 北大青年纵横",
         "查看该期《重要讲话与最新提法数据库》的概览目录、著录条目与原文链接。",
         "database.html",
         body,
@@ -623,7 +636,7 @@ def page_leaders(data: dict) -> str:
         "quoteCount": s["quoteCount"],
     }
     return shell(
-        "领导人论述库 · 重要讲话与最新提法数据库",
+        "领导人论述库 · 北大青年纵横",
         "历届党和国家领导人关于共青团及青年工作的重要论述汇总，按领导人、时间、场合、性质与原句著录。",
         "leaders.html",
         body,
@@ -693,7 +706,7 @@ def page_search(data: dict) -> str:
   </section>
 """ % {"issueCount": s["issueCount"], "entryCount": s["entryCount"]}
     return shell(
-        "全库检索 · 重要讲话与最新提法数据库",
+        "全库检索 · 北大青年纵横",
         "在所有期次的著录内容中检索重要讲话、政策文件与重要提法，支持关键词高亮与原文跳转。",
         "search.html",
         body,
@@ -832,7 +845,7 @@ python tools/build.py</pre>
         "softCount": q.get("problemCount", 0) - q.get("severeCount", 0),
     }
     return shell(
-        "关于本库 · 重要讲话与最新提法数据库",
+        "关于本库 · 北大青年纵横",
         "著录字段说明、数据质量核对结果、新增期次的操作步骤与技术说明。",
         "about.html",
         body,
@@ -860,7 +873,7 @@ def page_404(data: dict) -> str:
   </section>
 """
     return shell(
-        "页面未找到 · 重要讲话与最新提法数据库",
+        "页面未找到 · 北大青年纵横",
         "页面未找到。",
         "",
         body,

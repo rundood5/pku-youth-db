@@ -148,11 +148,11 @@ def main():
     # ---- 5. 中文与编码 ----
     print()
     print("[5/6] 中文内容与编码")
-    if "重要讲话与最新提法数据库" in idx:
-        print("   OK  首页含中文标题，UTF-8 正常")
+    if "北大青年纵横" in idx:
+        print("   OK  首页含站名「北大青年纵横」，UTF-8 正常")
     else:
-        fails.append("首页里找不到中文标题，可能编码损坏或页面不对")
-        print("   XX  未找到中文标题")
+        fails.append("首页里找不到站名「北大青年纵横」，可能编码损坏或页面不对")
+        print("   XX  未找到站名")
     if data:
         lead0 = (data.get("leaders") or [{}])[0]
         if lead0.get("leader") and lead0.get("quote"):
