@@ -12,3 +12,6 @@ __pycache__/
 ~$*
 .DS_Store
 Thumbs.db
+
+# 分发给别人用的离线压缩包（源文件都在 site/ 里，随时可重新打包）
+*.zip
