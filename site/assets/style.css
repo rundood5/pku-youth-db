@@ -304,20 +304,17 @@ table {
 }
 
 .brand-mark {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   flex: none;
-  border-radius: 9px;
-  background: linear-gradient(145deg, var(--red-500), var(--red-700));
   display: grid;
   place-items: center;
-  color: #fff;
-  box-shadow: 0 3px 10px rgba(140, 21, 25, 0.45);
 }
-.brand-mark .ic {
-  width: 21px;
-  height: 21px;
-  stroke-width: 1.9;
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .brand-text {
@@ -435,6 +432,21 @@ table {
   background: radial-gradient(circle, rgba(177, 29, 36, 0.42), transparent 66%);
   filter: blur(28px);
   pointer-events: none;
+}
+
+/* 首屏北大校徽水印：低不透明度，只做气氛，不干扰文字可读性。
+   位置特意压在首屏右侧卡片下方，与现有红色光晕叠在一起形成层次。 */
+.hero-emblem {
+  position: absolute;
+  z-index: -1;
+  right: 4%;
+  top: 46%;
+  transform: translateY(-50%);
+  width: min(520px, 42vw);
+  height: auto;
+  opacity: 0.13;
+  pointer-events: none;
+  user-select: none;
 }
 
 .hero-grid {
@@ -2091,6 +2103,10 @@ td.c-quote .q + .q {
   }
   .hero {
     padding: 50px 0 62px;
+  }
+  /* 窄屏时首屏改为单列，水印会压到卡片和按钮上，直接隐藏 */
+  .hero-emblem {
+    display: none;
   }
   .issue-grid,
   .quote-grid,

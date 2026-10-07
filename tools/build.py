@@ -39,13 +39,22 @@ NAV_ITEMS = [
     ("about.html", "关于本库"),
 ]
 
-FAVICON = (
-    "data:image/svg+xml,"
-    "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E"
-    "%3Crect width='32' height='32' rx='7' fill='%230f1b33'/%3E"
-    "%3Crect x='0' y='0' width='4' height='32' fill='%23b11d24'/%3E"
-    "%3Ctext x='17' y='23' font-size='18' font-family='serif' font-weight='bold'"
-    " fill='%23ffffff' text-anchor='middle'%3E青%3C/text%3E%3C/svg%3E"
+# 网站图标：由 source/北大校徽.png 处理后生成（见 tools/prepare_logo.py）
+# 用真实图片文件而不是内联 data URI，替换校徽时只需重跑一个脚本
+FAVICON = "assets/favicon.png"
+
+# 校徽图片资源（均由 tools/prepare_logo.py 生成）
+#   pku-logo-white.png 白色版 —— 深藏青底的导航栏与页脚必须用白色版，
+#                              红色版在深藏青上对比度过低（实测几乎看不清）
+#   pku-emblem.png     红色版 —— 首屏水印用
+LOGO_WHITE = "assets/pku-logo-white.png"
+LOGO_EMBLEM = "assets/pku-emblem.png"
+
+# 导航栏与页脚的校徽标记（白色版，放在深色底上）
+BRAND_MARK = (
+    '<span class="brand-mark" aria-hidden="true">'
+    '<img src="%s" alt="" width="160" height="160" decoding="async">'
+    "</span>" % LOGO_WHITE
 )
 
 # 网站名称（品牌）与其中的数据库模块名称，两者含义不同，不要混用：
@@ -96,7 +105,7 @@ def nav_html(active: str) -> str:
     <div class="wrap nav-inner">
       <a class="brand" href="index.html">
         <span class="brand-mark" aria-hidden="true">
-          <svg class="ic" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg>
+          <img src="assets/pku-logo-white.png" alt="" width="160" height="160" decoding="async">
         </span>
         <span class="brand-text">
           <span class="brand-name">北大青年纵横</span>
@@ -133,7 +142,7 @@ def footer_html(site_meta: dict) -> str:
         <div class="footer-brand">
           <div class="brand">
             <span class="brand-mark" aria-hidden="true">
-              <svg class="ic" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg>
+              <img src="assets/pku-logo-white.png" alt="" width="160" height="160" decoding="async">
             </span>
             <span class="brand-text">
               <span class="brand-name">北大青年纵横</span>
@@ -217,6 +226,7 @@ def shell(title: str, desc: str, active: str, body: str, site_meta: dict, path_p
 def page_index(data: dict) -> str:
     s = data["stats"]
     body = """  <section class="hero">
+    <img class="hero-emblem" src="assets/pku-emblem.png" alt="" aria-hidden="true" decoding="async">
     <div class="wrap hero-grid">
       <div>
         <span class="eyebrow"><span class="eyebrow-dot"></span>数据持续更新 · 已归档 %(issueCount)d 期</span>
