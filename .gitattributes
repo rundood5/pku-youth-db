@@ -1,0 +1,20 @@
+# 统一换行符，避免 Windows 下 Git 把文本文件转成 CRLF 后出问题：
+#  · YAML 工作流文件如果带 CRLF，GitHub Actions 有时会解析失败
+#  · HTML/CSS/JS 用 LF 也是通行做法，部署后与本地完全一致
+* text=auto eol=lf
+
+# 二进制文件不做任何转换
+*.docx binary
+*.png binary
+*.jpg binary
+*.zip binary
+
+# 明确按文本处理
+*.py   text eol=lf
+*.js   text eol=lf
+*.css  text eol=lf
+*.html text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
