@@ -500,6 +500,53 @@ table {
   position: relative;
   white-space: nowrap;
 }
+
+/* 对称句：荟萃时代嘉言　拓思青年纵横
+   紧跟在站名之下，用金色竖线做分隔，衬线 + 疏排呼应大标题 */
+.hero-couplet {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin: -6px 0 22px;
+  font-family: var(--font-serif);
+  font-size: clamp(15px, 1.5vw, 20px);
+  line-height: 1.5;
+  letter-spacing: 0.14em;
+  text-indent: 0.14em;
+  color: rgba(255, 255, 255, 0.93);
+}
+.hero-couplet::before {
+  content: "";
+  flex: none;
+  width: 3px;
+  height: 1.05em;
+  border-radius: 2px;
+  background: linear-gradient(var(--gold-300), var(--red-500));
+}
+/* 上下句之间的金色小菱形分隔符。
+   原本用的是全角空格，实测在多数中文字体里几乎看不出间隔，
+   整句会连成一长条，失去"对称句"的感觉，因此换成实体分隔符。 */
+.cp-dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  background: var(--gold-300);
+  transform: rotate(45deg);
+  border-radius: 1px;
+  opacity: 0.85;
+}
+.cp-dot-sm {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin: 0 0.7em;
+  background: currentColor;
+  transform: rotate(45deg);
+  border-radius: 1px;
+  vertical-align: 0.12em;
+  opacity: 0.8;
+}
 .hero h1 em::after {
   content: "";
   position: absolute;
@@ -1860,6 +1907,15 @@ td.c-quote .q + .q {
   max-width: 46ch;
   color: rgba(255, 255, 255, 0.6);
 }
+/* 页脚里的对称句：比首屏收敛，作为单位署名下方的一行题句。
+   用 .footer-brand .footer-couplet 提高优先级，避免被上面的 p 规则覆盖。 */
+.footer-brand .footer-couplet {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  color: var(--gold-300);
+  margin-bottom: 12px;
+}
 .footer-links {
   display: grid;
   gap: 11px;
@@ -2139,6 +2195,16 @@ td.c-quote .q + .q {
   .entry-grid,
   .stats {
     grid-template-columns: 1fr;
+  }
+  .hero-couplet {
+    gap: 10px;
+    font-size: 14.5px;
+    letter-spacing: 0.08em;
+    text-indent: 0.08em;
+  }
+  .footer-brand .footer-couplet {
+    font-size: 14px;
+    letter-spacing: 0.08em;
   }
   .stat {
     border-right: 0 !important;

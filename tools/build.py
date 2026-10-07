@@ -66,7 +66,7 @@ SITE_TAGLINE = "学习资料库"
 ORG_NAME = "共青团北京大学委员会"
 
 META_DESC = (
-    "北大青年纵横：收录党和国家领导人关于共青团与青年工作的重要论述，"
+    "北大青年纵横：荟萃时代嘉言，拓思青年纵横。收录党和国家领导人关于青年和共青团工作的重要论述，"
     "以及《重要讲话与最新提法数据库》各期政策文件与权威文章，支持关键词检索与原文跳转。"
 )
 
@@ -149,7 +149,8 @@ def footer_html(site_meta: dict) -> str:
               <span class="brand-sub">学习资料库</span>
             </span>
           </div>
-          <p>系统整理党和国家领导人关于共青团及青年工作的重要论述、最新重要讲话与政策文件，
+          <p class="footer-couplet">荟萃时代嘉言<span class="cp-dot-sm" aria-hidden="true"></span>拓思青年纵横</p>
+          <p>系统整理党和国家领导人关于青年和共青团工作的重要论述、最新重要讲话与政策文件，
              按期次归档、逐条著录，供团学工作与理论学习检索使用。</p>
         </div>
         <div>
@@ -231,10 +232,12 @@ def page_index(data: dict) -> str:
       <div>
         <span class="eyebrow"><span class="eyebrow-dot"></span>数据持续更新 · 已归档 %(issueCount)d 期</span>
         <h1>北大青年纵横</h1>
+        <p class="hero-couplet"><span>荟萃时代嘉言</span><i class="cp-dot" aria-hidden="true"></i><span>拓思青年纵横</span></p>
         <p class="hero-lede">
-          这里是共青团北京大学委员会的学习资料库。收录党和国家领导人关于共青团与青年工作的重要论述，
-          按期次归档《重要讲话与最新提法数据库》各期所涉政策文件、党报党刊文章与权威发布，
-          逐条著录标题、时间、来源、原文链接、关键词与观点速览，可全文检索、可直达原文。
+          这里是共青团北京大学委员会的学习资料库。以<b>青年和共青团工作</b>为主线，
+          收录党和国家领导人的重要论述，按期次归档《重要讲话与最新提法数据库》各期所涉政策文件、
+          党报党刊文章与权威发布，逐条著录标题、时间、来源、原文链接、关键词与观点速览，
+          可全文检索、可直达原文。
         </p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="database.html">
@@ -316,8 +319,9 @@ def page_index(data: dict) -> str:
             <svg class="ic" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M17 5.2a3.5 3.5 0 0 1 0 6.6M18.5 20a6.5 6.5 0 0 0-2-4.7"/></svg>
           </span>
           <h3>领导人论述库</h3>
-          <p>历届党和国家领导人关于共青团及青年工作的重要论述汇总，
-             按领导人、时间、场合、性质与完整原句著录，另附青年寄语分主题语录。</p>
+          <p>历届党和国家领导人关于<b>青年和共青团工作</b>的重要论述汇总，
+             按领导人、时间、场合、性质与完整原句著录，另附青年寄语分主题语录，
+             可检索具体提法的出处。</p>
           <span class="entry-foot">
             <span>%(leaderCount)d 条论述 · %(quoteCount)d 条寄语</span>
             <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
@@ -545,10 +549,11 @@ def page_leaders(data: dict) -> str:
       <div class="crumb">
         <a href="index.html">首页</a><span class="sep">/</span><span>领导人论述库</span>
       </div>
-      <h1>党和国家领导人关于共青团及青年工作重要论述</h1>
+      <h1>历届党和国家领导人关于青年和共青团工作的重要论述汇总</h1>
       <p class="lede">
-        汇总历届党和国家领导人在重要会议、座谈、回信与文章中关于共青团和青年工作的论述，
+        汇总历届党和国家领导人在重要会议、座谈、回信与文章中关于青年和共青团工作的论述，
         按 领导人 / 时间 / 场合 / 性质 / 完整原句 逐条著录，可检索具体提法的出处。
+        以青春之视角，读懂党对青年的殷切期望。
       </p>
       <div class="doc-head-meta">
         <span><svg class="ic" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M17 5.2a3.5 3.5 0 0 1 0 6.6M18.5 20a6.5 6.5 0 0 0-2-4.7"/></svg>%(leaderCount)d 条论述</span>
@@ -647,7 +652,7 @@ def page_leaders(data: dict) -> str:
     }
     return shell(
         "领导人论述库 · 北大青年纵横",
-        "历届党和国家领导人关于共青团及青年工作的重要论述汇总，按领导人、时间、场合、性质与原句著录。",
+        "历届党和国家领导人关于青年和共青团工作的重要论述汇总，按领导人、时间、场合、性质与原句著录，可检索具体提法出处。",
         "leaders.html",
         body,
         data["site"],
@@ -907,8 +912,12 @@ def write_db_js(data: dict) -> None:
 
 
 def check_html(paths) -> list:
-    """基础结构自检：标签闭合、必备元素、内部链接可达。"""
+    """基础结构自检：标签闭合、必备元素、内部链接可达、属性引号完整。"""
     problems = []
+    # 属性值必须带引号。曾经因为脚本写文件时把引号吞掉，生成出
+    # <p class=hero-couplet> 这种不合法 HTML，浏览器虽能容错但不可接受，
+    # 因此在这里做硬性检查。
+    unquoted = re.compile(r'\s(?:class|id|href|src|alt|aria-hidden|aria-label|rel|style|width|height)=[^"\'\s>]')
     for p in paths:
         with open(p, encoding="utf-8") as fh:
             html = fh.read()
@@ -921,6 +930,9 @@ def check_html(paths) -> list:
                 problems.append("%s: 缺少 %s" % (name, needle))
         if "nav-toggle" not in html:
             problems.append("%s: 缺少移动端导航按钮" % name)
+        hits = unquoted.findall(html)
+        if hits:
+            problems.append("%s: 有 %d 处属性值未加引号 -> %s" % (name, len(hits), hits[:3]))
         # 内部链接可达性
         for href in set(re.findall(r'href="([^"#:?]+\.html)"', html)):
             if not os.path.isfile(os.path.join(SITE, href)):
