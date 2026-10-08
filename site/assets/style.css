@@ -863,6 +863,18 @@ table {
   gap: var(--gap-lg);
 }
 
+/* 首页「内容板块」为 4 张卡，用 2×2 而不是 3 列：
+   写死 3 列会让第 4 张单独掉到第二行，出现 3+1 的尴尬排布。 */
+.entry-grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 720px) {
+  .entry-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
 .entry {
   position: relative;
   display: flex;
