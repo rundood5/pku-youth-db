@@ -280,9 +280,9 @@ const CHECKS = [
     name: "首页",
     expect: [
       ["#latestIssue", "hero-card-tag", "最新一期"],
-      ["#recentIssues", "issue-card", null, 1],
-      ["#latestItems", "class=\"item", null, 1],
-      ["#kwCloud", "", ""],
+      ["#recentIssues", "issue-card", null, 4],
+      ["#latestItems", "class=\"item", null, 6],
+      ["#kwCloud", "chip", null, 5],
       ["@raw", "北大青年纵横", null],
       ["@raw", "<h1>北大青年纵横</h1>", null, 1]
     ]
@@ -291,22 +291,22 @@ const CHECKS = [
     file: "database.html",
     name: "数据库总览",
     expect: [
-      ["#catRow", "chip", null, 2],
-      ["#issueList", "issue-card", null, 1],
+      ["#catRow", "chip", null, 4],
+      ["#issueList", "issue-card", null, 6],
       ["#dbCount", "", "共"],
       ["@raw", "北大青年纵横", null]
     ]
   },
   {
     file: "issue.html",
-    name: "单期详情（唯一保留的一期）",
+    name: "单期详情（指定期号 no=14）",
     query: "?no=14",
     expect: [
-      ["#issueSide", "side-item", null, 1],
+      ["#issueSide", "side-item", null, 20],
       ["#issueHead", "h1", "总第14期"],
       ["#entryList", "class=\"item", null, 1],
       ["#issueOverview", "本期概览"],
-      ["#issuePager", "href=\"database.html\""]
+      ["#issuePager", "href=\"issue.html?no="]
     ]
   },
   {
@@ -314,8 +314,8 @@ const CHECKS = [
     name: "单期详情（缺省取最新一期）",
     query: "",
     expect: [
-      ["#issueHead", "h1", "总第14期"],
-      ["#entryList", "class=\"item", null, 1]
+      ["#issueHead", "h1", "总第22期"],
+      ["#entryList", "class=\"item", null, 3]
     ]
   },
   {
@@ -338,8 +338,8 @@ const CHECKS = [
     file: "search.html",
     name: "全库检索",
     expect: [
-      ["#gsCats", "chip", null, 2],
-      ["#gsCats", "chip", null, 2],
+      ["#gsCats", "chip", null, 5],
+      ["#gsCats", "chip", null, 5],
       ["#gsCount", "", "全库共"]
     ]
   },
@@ -374,7 +374,7 @@ const CHECKS = [
   {
     file: "about.html",
     name: "关于本库",
-    expect: [["#qualityBody", "tr", null, 1]]
+    expect: [["#qualityBody", "tr", null, 10]]
   },
   {
     file: "404.html",

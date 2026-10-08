@@ -1089,36 +1089,57 @@ table {
   transition: transform 0.22s var(--ease);
 }
 
-/* ---------- 11.5 豆腐块（共青团青年发展小栏目） ---------- */
-.doufu-grid {
+/* ---------- 11.5 首页右栏 + 豆腐块（小栏目） ---------- */
+.home-split {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--gap-lg);
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: var(--gap-xl);
+  align-items: start;
 }
 
+.home-side {
+  position: sticky;
+  top: calc(var(--nav-h) + 20px);
+  display: grid;
+  gap: 12px;
+}
+
+.side-block-head {
+  margin-bottom: 2px;
+}
+.side-title {
+  font-size: 16px;
+  font-family: var(--font-serif);
+  padding-left: 10px;
+  border-left: 4px solid var(--red-500);
+  line-height: 1.3;
+}
+.side-desc {
+  margin-top: 7px;
+  font-size: 12.5px;
+  color: var(--ink-3);
+  line-height: 1.6;
+}
+
+/* 豆腐块：右栏小卡片，比原来三栏版更紧凑 */
 .doufu {
-  display: flex;
-  flex-direction: column;
   background: var(--white);
   border: 1px solid var(--line);
   border-radius: var(--r);
-  padding: 22px 24px 18px;
+  padding: 15px 17px 13px;
   box-shadow: var(--sh-1);
-  transition: transform 0.22s var(--ease), box-shadow 0.22s var(--ease),
-    border-color 0.22s var(--ease);
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
 .doufu:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--sh-2);
   border-color: var(--navy-100);
+  box-shadow: var(--sh-2);
 }
 
-/* 标题：仿参考图的红色短横线 */
 .doufu-title {
-  font-size: 17px;
+  font-size: 14.5px;
   font-family: var(--font-serif);
-  padding-bottom: 11px;
-  margin-bottom: 15px;
+  padding-bottom: 8px;
+  margin-bottom: 11px;
   border-bottom: 1px solid var(--line);
   position: relative;
 }
@@ -1127,82 +1148,134 @@ table {
   position: absolute;
   left: 0;
   bottom: -1px;
-  width: 42px;
-  height: 3px;
+  width: 34px;
+  height: 2.5px;
   border-radius: 2px;
   background: var(--red-500);
 }
 
 .doufu-list {
   display: grid;
-  gap: 12px;
-  flex: 1;
+  gap: 9px;
 }
 .doufu-list li {
   position: relative;
-  padding-left: 15px;
-  font-size: 14.5px;
-  line-height: 1.7;
+  padding-left: 13px;
+  font-size: 13px;
+  line-height: 1.62;
 }
 .doufu-list li::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 0.62em;
-  width: 5px;
-  height: 5px;
+  top: 0.6em;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
   background: var(--ink-4);
 }
 .doufu-list a {
   color: var(--ink-2);
-  display: inline-flex;
-  align-items: baseline;
-  gap: 5px;
 }
 .doufu-list a:hover {
   color: var(--red-600);
 }
-.doufu-list a .ic {
-  width: 12px;
-  height: 12px;
-  opacity: 0;
-  transition: opacity 0.18s var(--ease);
-  flex: none;
-}
-.doufu-list a:hover .ic {
-  opacity: 1;
-}
 
 .doufu-more {
-  margin-top: 16px;
-  padding-top: 13px;
+  margin-top: 12px;
+  padding-top: 10px;
   border-top: 1px solid var(--line-2);
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 6px;
-  font-size: 13px;
+  gap: 5px;
+  font-size: 12.5px;
   color: var(--ink-3);
 }
 .doufu-more:hover {
   color: var(--red-600);
 }
 .doufu-more .ic {
+  width: 13px;
+  height: 13px;
+}
+
+.side-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  border-radius: var(--r);
+  background: var(--navy-800);
+  color: #fff;
+  font-size: 13px;
+}
+.side-all:hover {
+  background: var(--red-600);
+  color: #fff;
+}
+.side-all .ic {
   width: 14px;
   height: 14px;
 }
 
-@media (max-width: 1080px) {
-  .doufu-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-@media (max-width: 720px) {
-  .doufu-grid {
+@media (max-width: 1000px) {
+  .home-split {
     grid-template-columns: 1fr;
+    gap: var(--gap-xl);
+  }
+  .home-side {
+    position: static;
   }
 }
+
+/* ---------- 11.55 课题页：折叠项与下载 ---------- */
+.award-intro {
+  font-size: 14.5px;
+  line-height: 1.8;
+  color: var(--ink-2);
+  padding: 14px 0 4px;
+}
+.award-dl {
+  margin-top: 12px;
+}
+.award-dl-title {
+  font-size: 12.5px;
+  color: var(--ink-3);
+  margin-bottom: 9px;
+}
+.dl-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+a.dl {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--r-pill);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--navy-600);
+}
+a.dl:hover {
+  background: var(--red-100);
+  border-color: #f1ccce;
+  color: var(--red-700);
+}
+a.dl .ic {
+  width: 14px;
+  height: 14px;
+}
+.dl-none {
+  font-size: 13px;
+  color: var(--ink-4);
+  padding: 6px 0;
+}
+
 
 /* ---------- 11.6 问答窗口 ---------- */
 .qa-panel {

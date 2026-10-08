@@ -138,40 +138,32 @@ DOUFU_BLOCKS = [
 
 
 def doufu_html() -> str:
-    """生成「豆腐块」三栏小模块的 HTML。"""
+    """生成「豆腐块」小栏目的 HTML（放在首页右侧栏，尺寸较小）。"""
     cards = []
     for blk in DOUFU_BLOCKS:
         lis = "\n".join(
-            '            <li><a href="%s" target="_blank" rel="noopener noreferrer">%s%s</a></li>'
-            % (it["url"], it["text"],
-               '<svg class="ic" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4 11 13"/>'
-               '<path d="M18 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/></svg>')
+            '            <li><a href="%s" target="_blank" rel="noopener noreferrer">%s</a></li>'
+            % (it["url"], it["text"])
             for it in blk["items"]
         )
         cards.append(
-            '      <div class="doufu reveal">\n'
-            '        <h3 class="doufu-title">%s</h3>\n'
-            '        <ul class="doufu-list">\n%s\n        </ul>\n'
-            '        <a class="doufu-more" href="%s" target="_blank" rel="noopener noreferrer">'
+            '        <div class="doufu">\n'
+            '          <h3 class="doufu-title">%s</h3>\n'
+            '          <ul class="doufu-list">\n%s\n          </ul>\n'
+            '          <a class="doufu-more" href="%s" target="_blank" rel="noopener noreferrer">'
             "查看更多 <svg class=\"ic\" viewBox=\"0 0 24 24\"><path d=\"M5 12h14\"/><path d=\"m13 6 6 6-6 6\"/></svg></a>\n"
-            "      </div>" % (blk["title"], lis, blk["more"])
+            "        </div>" % (blk["title"], lis, blk["more"])
         )
     return (
-        '  <section class="section section-alt" id="dofu">\n'
-        '    <div class="wrap">\n'
-        '      <div class="section-head">\n'
-        "        <div>\n"
-        '          <h2 class="section-title">共青团青年发展</h2>\n'
-        '          <p class="section-desc">共青团有关青年发展的规范性文件、调研信息与全团要讯，'
-        "点击即可直达中国共青团网等权威来源。</p>\n"
-        "        </div>\n"
-        '        <a class="section-link" href="https://www.gqt.org.cn/" target="_blank" rel="noopener noreferrer">'
+        '      <aside class="home-side">\n'
+        '        <div class="side-block-head">\n'
+        '          <h2 class="side-title">共青团青年发展</h2>\n'
+        '          <p class="side-desc">规范性文件、调研信息与全团要讯，一键直达权威来源</p>\n'
+        "        </div>\n" + "\n".join(cards) + "\n"
+        '        <a class="side-all" href="https://www.gqt.org.cn/" target="_blank" rel="noopener noreferrer">'
         '访问中国共青团网 <svg class="ic" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4 11 13"/>'
         '<path d="M18 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/></svg></a>\n'
-        "      </div>\n"
-        '      <div class="doufu-grid">\n' + "\n".join(cards) + "\n      </div>\n"
-        "    </div>\n"
-        "  </section>\n"
+        "      </aside>"
     )
 
 
@@ -510,10 +502,8 @@ def page_index(data: dict) -> str:
   </section>
 """
 
-    # 豆腐块单独拼接，避免把 % 格式化的作用范围切断
-    body += doufu_html()
     body += """
-  <section class="section" id="recentSection">
+  <section class="section section-alt" id="recentSection">
     <div class="wrap">
       <div class="section-head">
         <div>
@@ -531,17 +521,22 @@ def page_index(data: dict) -> str:
 
   <section class="section section-alt">
     <div class="wrap">
-      <div class="section-head">
-        <div>
-          <h2 class="section-title">最近更新的内容</h2>
-          <p class="section-desc">跨期次抽取的最新条目，标题可直接跳转原文。</p>
+      <div class="home-split">
+        <div class="home-main">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">最近更新的内容</h2>
+              <p class="section-desc">跨期次抽取的最新条目，标题可直接跳转原文。</p>
+            </div>
+            <a class="section-link" href="search.html">
+              去检索
+              <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+            </a>
+          </div>
+          <div class="entry-list" id="latestItems"></div>
         </div>
-        <a class="section-link" href="search.html">
-          去检索
-          <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
-        </a>
+""" + doufu_html() + """
       </div>
-      <div class="entry-list" id="latestItems"></div>
     </div>
   </section>
 
@@ -914,17 +909,48 @@ def page_search(data: dict) -> str:
 # 关于本库
 # --------------------------------------------------------------------------
 def page_awards(data: dict) -> str:
-    """共青团与青年工作课题栏目：特别贡献奖课题清单。"""
+    """共青团与青年工作课题栏目：特别贡献奖课题清单。
+
+    每项课题点击可展开，显示简要介绍与下载链接。
+    介绍文字由课题名称自动生成（源数据只有“序号/题目/负责人”，没有摘要字段），
+    可下载的申报材料从 source 目录定位，按课题序号匹配。
+    """
     a = data.get("awards", {}) or {}
     items = a.get("items", []) or []
-    rows = "\n".join(
-        "        <tr>"
-        '<td class="c-no">%d</td>'
-        '<td class="c-title">%s</td>'
-        '<td class="c-owner">%s</td>'
-        "</tr>" % (it["no"], it["title"], it.get("owner") or "—")
-        for it in items
-    )
+
+    cards = []
+    for it in items:
+        title = it["title"]
+        owner = it.get("owner") or "—"
+        # 简介由 extract.py 生成并存在数据里，这里直接取用
+        intro = it.get("intro") or "本课题为该批次特别贡献奖立项课题。"
+        # 下载链接：把课题序号对应的申报材料列出来（本地文件，随 source 目录一起分发）
+        files = it.get("files") or []
+        if files:
+            links = "\n".join(
+                '                <li><a class="dl" href="%s" download>%s'
+                '<svg class="ic" viewBox="0 0 24 24"><path d="M12 4v12"/><path d="m7 11 5 5 5-5"/>'
+                '<path d="M4 20h16"/></svg></a></li>' % (f["path"], f["name"])
+                for f in files
+            )
+            dl = '<ul class="dl-list">\n%s\n            </ul>' % links
+        else:
+            dl = '<p class="dl-none">暂无可下载的申报材料</p>'
+
+        cards.append(
+            '      <div class="acc reveal">\n'
+            '        <button class="acc-head" type="button" aria-expanded="false">\n'
+            '          <span class="lead"><span>%s</span>'
+            '<span class="cnt">负责人：%s</span></span>\n'
+            '          <svg class="ic" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>\n'
+            "        </button>\n"
+            '        <div class="acc-body" hidden>\n'
+            '          <p class="award-intro">%s</p>\n'
+            '          <div class="award-dl"><div class="award-dl-title">申报材料下载</div>%s</div>\n'
+            "        </div>\n"
+            "      </div>" % (title, owner, intro, dl)
+        )
+
     body = """  <section class="doc-head">
     <div class="wrap">
       <div class="crumb">
@@ -932,8 +958,8 @@ def page_awards(data: dict) -> str:
       </div>
       <h1>共青团与青年工作课题</h1>
       <p class="lede">
-        %(subtitle)s。以下为理论研究室发布的特别贡献奖课题清单，共 %(n)d 项，
-        涵盖青年理想信念、青年发展政策、共青团工作、思政育人、乡村振兴等方向。
+        %(subtitle)s。共 %(n)d 项课题，涵盖青年理想信念、青年发展政策、共青团工作、
+        思政育人、乡村振兴等方向。点击任一课题可展开查看简要介绍与申报材料下载。
       </p>
       <div class="doc-head-meta">
         <span><svg class="ic" viewBox="0 0 24 24"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22.5Z"/><path d="M8 7h8M8 11h6"/></svg>%(n)d 项课题</span>
@@ -943,40 +969,19 @@ def page_awards(data: dict) -> str:
   </section>
 
   <section class="section-tight">
-    <div class="wrap">
-      <div class="notice notice-info" style="margin-bottom:24px">
-        <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
-        <div>本页仅著录课题名称与负责人，用于了解研究方向与选题分布；
-          课题作品的完整文本未在本站公开。</div>
-      </div>
-
-      <div class="table-wrap">
-        <div class="table-scroll">
-          <table class="data" style="min-width:640px">
-            <thead>
-              <tr>
-                <th scope="col" style="width:76px">序号</th>
-                <th scope="col">课题名称</th>
-                <th scope="col" style="width:130px">负责人</th>
-              </tr>
-            </thead>
-            <tbody>
-%(rows)s
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <div class="wrap wrap-narrow">
+%(cards)s
     </div>
   </section>
 """ % {
         "subtitle": a.get("subtitle", "共青团与青年工作课题"),
         "n": len(items),
         "source": a.get("source", "—"),
-        "rows": rows,
+        "cards": "\n".join(cards),
     }
     return shell(
         "共青团与青年工作课题 · 北大青年纵横",
-        "北京大学“挑战杯”系列赛事特别贡献奖（校团委理论研究室）课题清单。",
+        "北京大学“挑战杯”系列赛事特别贡献奖（校团委理论研究室）课题清单，含简要介绍与申报材料下载。",
         "awards.html",
         body,
         data["site"],

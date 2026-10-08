@@ -25,6 +25,7 @@ import json
 import os
 import re
 import sys
+import urllib.parse
 from datetime import date
 
 from docx import Document
@@ -208,12 +209,14 @@ def split_section_title(raw: str):
 
 
 def load_relevance_rules(path: str) -> dict:
-    """读取 filter-list.txt 的收录白名单。
+    """读取 filter-list.txt 的收录规则。
 
-    返回 {"include": [...], "exclude": [...]}。
-    文件不存在时返回空规则（表示全部收录），避免误删。
+    返回 {"enabled": bool, "include": [...], "exclude": [...]}。
+    默认 enabled = False，即不做过筛、保留全部内容；
+    只有显式写 enabled = yes 才启用白名单过滤。这样能避免规则文件缺失或写坏
+    导致数据库被意外清空。
     """
-    rules = {"include": [], "exclude": []}
+    rules = {"enabled": False, "include": [], "exclude": []}
     if not os.path.isfile(path):
         return rules
     section = None
@@ -224,18 +227,26 @@ def load_relevance_rules(path: str) -> dict:
                 continue
             if s.startswith("[") and s.endswith("]"):
                 key = s[1:-1].strip().lower()
-                section = key if key in ("include", "exclude") else None
+                section = key if key in ("include", "exclude", "options") else None
                 continue
-            if section:
+            if section == "options":
+                if s.lower().replace(" ", "").startswith("enabled="):
+                    val = s.split("=", 1)[1].strip().lower()
+                    rules["enabled"] = val in ("yes", "true", "on", "1")
+                continue
+            if section in ("include", "exclude"):
                 rules[section].append(s.lower())
     return rules
 
 
 def is_relevant(title: str, summary: str, rules: dict) -> bool:
-    """判断条目是否与「青年和共青团工作」相关。
+    """判断条目是否收录。
 
-    白名单为空时一律收录（避免规则文件损坏导致整站空白）。
+    过滤未启用（默认）时一律收录，即“保留原样”；
+    启用后按 [include] 白名单收录、[exclude] 例外剔除。
     """
+    if not rules.get("enabled"):
+        return True
     inc, exc = rules["include"], rules["exclude"]
     if not inc:
         return True
@@ -243,6 +254,75 @@ def is_relevant(title: str, summary: str, rules: dict) -> bool:
     if any(k in hay for k in exc):
         return False
     return any(k in hay for k in inc)
+
+
+# 课题简介生成规则：源数据只有“序号/题目/负责人”，没有摘要字段，
+# 因此按题目关键词归纳研究方向，生成一句简要介绍（不是原文摘要，勿当作内容概述引用）。
+AWARD_THEME_RULES = [
+    ("青年理想信念", "围绕青年理想信念教育展开，研究其常态化、制度化建设的路径与机制。"),
+    ("理想信念", "聚焦青年理想信念教育，探讨如何把教育要求落到日常、形成长效机制。"),
+    ("国际青年", "比较研究国际青年发展与人文交流，为青年外事与青年发展政策提供参照。"),
+    ("青年发展", "以青年发展政策为对象，梳理政策供给与青年需求之间的匹配关系与改进方向。"),
+    ("生育", "关注当代青年家庭与生育观念的变化趋势，分析其成因及对青年政策的影响。"),
+    ("消费", "研究当代青年消费行为与圈层文化消费特征，为引导青年理性消费提供依据。"),
+    ("文旅", "考察青年文旅消费的行为特征与趋势，提出面向青年群体的服务优化建议。"),
+    ("价值观", "分析青年价值观的生成机理，探讨更具针对性的培育策略。"),
+    ("志愿服务", "研究志愿服务对青年政治认同的影响，评估志愿育人的实际成效。"),
+    ("养老", "从银发经济视角观察青年养老观念的变化，讨论青年责任与制度衔接。"),
+    ("基层团组织", "以基层团组织为切入点，研究共青团动员青年参与乡村振兴的实践机制。"),
+    ("乡村振兴", "研究青年助力乡村振兴的路径与成效，总结可复制的实践经验。"),
+    ("红色资源", "探讨高校红色资源融入思想政治教育的应用方式与实际效果。"),
+    ("共青团", "聚焦高校共青团工作，研究其高质量发展的机理、困境与优化路径。"),
+    ("网络思政", "研究全媒体环境下高校共青团网络思政引领的创新机制。"),
+    ("思政", "围绕高校思想政治教育，研究育人体系构建与实效提升的路径。"),
+    ("实习", "研究大学生实习见习的行为模式与长效机制，分析其对成长成才的影响。"),
+    ("心理健康", "研究家庭、学校、社会协同育人对学生心理健康的作用机制。"),
+    ("学生权益", "关注学生权益意识与校园服务保障，提出改进校园治理的建议。"),
+    ("学生社团", "研究公益类学生社团的实践模式与发展策略，总结社团育人经验。"),
+    ("理论宣讲", "评估青年理论宣讲组织的成效，探讨提升宣讲感染力的创新路径。"),
+    ("榜样", "研究青年榜样宣传教育的范式转变，探讨如何实现价值共鸣。"),
+    ("文化遗产", "研究校园文化遗产的创造性转化及其育人机制。"),
+    ("口述史", "以口述史方法记录重大志愿活动，梳理志愿精神的传承脉络。"),
+    ("留学生", "面向高校留学生群体，研究阐释中国道路与中国理论的路径与机制。"),
+    ("自媒体", "考察平台自媒体人的群体特征，分析其对青年认知的影响。"),
+    ("教育振兴", "研究高校青年助力县域教育振兴的路径与实际成效。"),
+    ("教师培训", "从教师培训切入，探讨教育帮扶由“输血”转向“造血”的机制。"),
+    ("在线学习", "研究智媒环境下青年学生的学习行为模式及其对网络育人的启示。"),
+    ("国际传播", "研究中国青年国际传播能力的结构特征与现实困境。"),
+    ("外交", "分析青年群体国际关系取向的形成因素，为青年外事工作提供参考。"),
+    ("戏曲", "以戏曲遗产保护为例，研究传统文化的当代传承与经验再造。"),
+    ("绿色循环", "以快递包装循环为例，研究青年参与绿色低碳实践的可行路径。"),
+]
+
+
+def award_intro(title: str) -> str:
+    """按题目关键词生成一句简要介绍。"""
+    for key, text in AWARD_THEME_RULES:
+        if key in title:
+            return text
+    return "本课题为该批次特别贡献奖立项课题，研究方向见课题名称。"
+
+
+def award_files(no: int, title: str, base_dir: str) -> list:
+    """定位该课题序号对应的申报材料，返回可下载的文件列表。
+
+    源目录里每个课题有两类文件：作品提交、附件一。文件名形如
+    “28特贡+李思诺+作品提交.pdf”。这里按序号前缀匹配，返回
+    site/awards.html 可用的相对路径（../source/...）并做 URL 编码。
+    """
+    if not os.path.isdir(base_dir):
+        return []
+    out = []
+    for name in sorted(os.listdir(base_dir)):
+        if name.startswith("._") or not re.match(r"^%d特贡" % no, name):
+            continue
+        if name.lower().endswith((".pdf", ".docx", ".doc")):
+            kind = "作品提交" if "作品提交" in name else ("附件一" if "附件一" in name else "材料")
+            rel = "../source/" + os.path.relpath(
+                os.path.join(base_dir, name), SOURCE_DIR).replace("\\", "/")
+            out.append({"name": "%s（%s）" % (kind, os.path.splitext(name)[1].lstrip(".").upper()),
+                        "path": urllib.parse.quote(rel)})
+    return out
 
 
 def load_award_projects(path: str) -> dict:
@@ -274,10 +354,21 @@ def load_award_projects(path: str) -> dict:
             continue
         items.append({"no": int(no), "title": title, "owner": owner})
     items.sort(key=lambda x: x["no"])
+    # 为每项课题补上简介与可下载材料。
+    # 申报材料放在 xlsx 同级的“理论研究室”子目录里（文件名形如 28特贡+姓名+作品提交.pdf）。
+    xlsx_dir = os.path.dirname(path)
+    file_dir = os.path.join(xlsx_dir, "理论研究室")
+    if not os.path.isdir(file_dir):
+        file_dir = xlsx_dir  # 兜底：结构若是平铺的也能找到
+    for it in items:
+        it["intro"] = award_intro(it["title"])
+        it["files"] = award_files(it["no"], it["title"], file_dir)
+    with_files = sum(1 for it in items if it["files"])
     return {
         "title": "共青团与青年工作课题",
         "subtitle": "北京大学“挑战杯”系列赛事·特别贡献奖（校团委理论研究室）",
         "items": items,
+        "withFiles": with_files,
         "source": os.path.relpath(path, SOURCE_DIR).replace("\\", "/"),
     }
 
@@ -781,31 +872,32 @@ def main():
                 print("解析失败 %s: %s" % (name, exc))
     issues.sort(key=lambda it: it["issue"])
 
-    # ---- 按相关性过滤：剔除与青年和共青团工作无关的条目 ----
+    # ---- 按相关性过滤（默认关闭，保留原样）----
     rules = load_relevance_rules(FILTER_FILE)
     dropped_entries = 0
-    dropped_issues = []
     for it in issues:
         # 先记住过滤前的条数，否则后面无从统计剔除了多少
         it["origEntryCount"] = len(it["entries"])
-        kept = []
-        for e in it["entries"]:
-            if is_relevant(e.get("title", ""), e.get("summaryShort", ""), rules):
-                kept.append(e)
-            else:
-                dropped_entries += 1
-        it["entries"] = kept
-        it["entryCount"] = len(kept)
-        it["droppedCount"] = it["origEntryCount"] - len(kept)
+        if rules.get("enabled"):
+            kept = []
+            for e in it["entries"]:
+                if is_relevant(e.get("title", ""), e.get("summaryShort", ""), rules):
+                    kept.append(e)
+                else:
+                    dropped_entries += 1
+            it["entries"] = kept
+        it["entryCount"] = len(it["entries"])
+        it["droppedCount"] = it["origEntryCount"] - it["entryCount"]
 
-    # 条目被全部剔除的期次不再展示
+    # 条目被全部剔除的期次不再展示（过滤关闭时不会发生）
     dropped_issues = [it["label"] for it in issues if it["entryCount"] == 0]
     issues = [it for it in issues if it["entryCount"] > 0]
-    # 过滤后各字段需要重算，否则卡片上的分类标签会残留已删除条目的内容
-    for it in issues:
-        it["categories"] = sorted({e.get("category", "") for e in it["entries"] if e.get("category")})
-        it["keywords"] = sorted({k for e in it["entries"] for k in e.get("keywords", [])})
-        it["sources"] = sorted({e.get("source", "") for e in it["entries"] if e.get("source")})
+    # 若发生过过滤，各字段需要重算，否则卡片上的分类标签会残留已删除条目的内容
+    if dropped_entries:
+        for it in issues:
+            it["categories"] = sorted({e.get("category", "") for e in it["entries"] if e.get("category")})
+            it["keywords"] = sorted({k for e in it["entries"] for k in e.get("keywords", [])})
+            it["sources"] = sorted({e.get("source", "") for e in it["entries"] if e.get("source")})
 
     # ---- 领导人论述 ----
     leaders = parse_leaders(LEADER_DOC) if os.path.isfile(LEADER_DOC) else []
@@ -850,6 +942,7 @@ def main():
         "issues": issues,
         "awards": awards,
         "filterInfo": {
+            "enabled": rules.get("enabled", False),
             "rules": rules["include"],
             "droppedEntries": dropped_entries,
             "droppedIssues": dropped_issues,
