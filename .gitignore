@@ -24,3 +24,6 @@ dist/
 .sshlog.txt
 .stage/
 .pack/
+
+# 截图与浏览器临时目录（仅供验证，不入库）
+.shot/
