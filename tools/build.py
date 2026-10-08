@@ -540,11 +540,13 @@ def page_index(data: dict) -> str:
             </a>
           </div>
         </div>
-        <div class="tian-cell tian-cell-qa">
+        <div class="tian-cell tian-side">
+          <div class="tian-side-block">
 """ + qa_html(data) + """
-        </div>
-        <div class="tian-cell">
+          </div>
+          <div class="tian-side-block">
 """ + doufu_html() + """
+          </div>
         </div>
       </div>
     </div>

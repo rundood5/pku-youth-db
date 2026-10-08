@@ -1102,11 +1102,12 @@ table {
 }
 
 /* ---------- 11.5 首页主区 + 右栏（左宽右窄）+ 豆腐块 ----------
-   布局：  最新收录内容（跨期次条目）  │  问答窗口
-        （左列约 68%）               │  豆腐块
-                                     │ （右列约 32%）
-   「最新归档期次」与「最近更新的内容」原先分别展示、
-   内容高度重合，现已合并为左列一个区块。
+   布局：  最新收录内容（横跨左列，很宽）  │  问答窗口
+                                       │  共青团青年发展（豆腐块）
+                                       │
+   ⚠ 关键：右栏两块必须包在**同一个** grid 单元格里。
+   之前把它们做成两个并列的 grid 子元素，2 列网格会自动放置成
+   “第2个填右列、第3个填下一行左列”，导致豆腐块跑到宽左栏去了。
    窄屏（<1100px）自动落回单列。 */
 .tian-grid {
   display: grid;
@@ -1119,13 +1120,20 @@ table {
   min-width: 0;
 }
 
-/* 右栏两块的容器化（问答在上、豆腐块在下） */
-.tian-cell-qa {
-  margin-bottom: var(--gap-lg);
+/* 右栏：问答窗口在上、豆腐块在下 */
+.tian-side {
+  display: grid;
+  gap: var(--gap-lg);
 }
-/* 右列第 2 块（豆腐块）紧接问答窗口之后 */
-.tian-cell-qa + .tian-cell {
-  margin-top: 0;
+.tian-side-block {
+  min-width: 0;
+}
+
+/* 右栏窄，问答窗口的输入框占满整行、按钮另起一行内容宽度右对齐 */
+.tian-side .qa-input-row {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 /* 田字格内的区块标题比通栏时收敛一些 */
@@ -1151,50 +1159,50 @@ table {
 }
 
 /* 问答窗口放进较窄的右列后进一步收紧 */
-.tian-cell-qa .qa-panel {
+.tian-side .qa-panel {
   box-shadow: var(--sh-1);
 }
-.tian-cell-qa .qa-head {
+.tian-side .qa-head {
   padding: 12px 16px;
   font-size: 13.5px;
 }
-.tian-cell-qa .qa-head small {
+.tian-side .qa-head small {
   display: none; /* 窄列下这行数据范围说明会挤成两行，隐藏 */
 }
-.tian-cell-qa .qa-body {
+.tian-side .qa-body {
   padding: 14px 16px;
 }
-.tian-cell-qa .qa-input-row {
+.tian-side .qa-input-row {
   gap: 8px;
 }
-.tian-cell-qa .search-box {
+.tian-side .search-box {
   flex: 1 1 100%;
 }
 /* 按钮不铺满整行：窄列下铺满会出现一大块红色，视觉过重。
    改为内容宽度并右对齐，与输入框形成层次。 */
-.tian-cell-qa .qa-input-row .btn {
+.tian-side .qa-input-row .btn {
   flex: 0 0 auto;
   width: auto;
   margin-left: auto;
   padding: 9px 20px;
   font-size: 14px;
 }
-.tian-cell-qa .qa-examples .chip {
+.tian-side .qa-examples .chip {
   font-size: 12.5px;
   padding: 5px 11px;
 }
-.tian-cell-qa .qa-answer {
+.tian-side .qa-answer {
   margin-top: 14px;
   padding-top: 13px;
 }
-.tian-cell-qa .qa-hit {
+.tian-side .qa-hit {
   padding: 12px 14px;
 }
-.tian-cell-qa .qa-hit p {
+.tian-side .qa-hit p {
   font-size: 13.5px;
   line-height: 1.72;
 }
-.tian-cell-qa .qa-hit-cite {
+.tian-side .qa-hit-cite {
   font-size: 12px;
   gap: 5px 10px;
 }
