@@ -158,15 +158,24 @@
         <div class="tian-cell" id="recentSection">
           <div class="section-head">
             <div>
-              <h2 class="section-title">最新归档期次</h2>
-              <p class="section-desc">按发布时间倒序排列，点击卡片查看该期完整概览与著录条目。</p>
+              <h2 class="section-title">最新收录内容</h2>
+              <p class="section-desc">
+                跨期次汇总最近收录的条目，按发布时间倒序排列；
+                点击标题直达原文，或进入数据库按整期查看。共已归档 20 期。
+              </p>
             </div>
             <a class="section-link" href="database.html">
-              查看全部 20 期
+              按整期浏览 20 期
               <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
             </a>
           </div>
-          <div class="issue-grid issue-grid-1col" id="recentIssues"></div>
+          <div class="entry-list" id="latestItems"></div>
+          <div class="more-wrap">
+            <a class="btn btn-outline" href="database.html">
+              <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+              进入重要讲话数据库
+            </a>
+          </div>
         </div>
         <div class="tian-cell tian-cell-qa">
 
@@ -217,19 +226,6 @@
 
         </div>
         <div class="tian-cell">
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">最近更新的内容</h2>
-              <p class="section-desc">跨期次抽取的最新条目，标题可直接跳转原文。</p>
-            </div>
-            <a class="section-link" href="search.html">
-              去检索
-              <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
-            </a>
-          </div>
-          <div class="entry-list" id="latestItems"></div>
-        </div>
-        <div class="tian-cell">
       <aside class="home-side">
         <div class="side-block-head">
           <h2 class="side-title">共青团青年发展</h2>
@@ -278,51 +274,6 @@
         </div>
       </div>
       <div class="chip-row" id="kwCloud"></div>
-    </div>
-  </section>
-
-  <section class="section" id="qa">
-    <div class="wrap">
-      <div class="section-head">
-        <div>
-          <h2 class="section-title">问答窗口</h2>
-          <p class="section-desc">
-            输入问题，系统在<strong>本站已收录的资料</strong>中检索原文并给出出处。只查库内内容，不联网、不编造。
-          </p>
-        </div>
-      </div>
-
-      <div class="qa-panel">
-        <div class="qa-head">
-          <svg class="ic ic-lg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-          <span>库内检索问答</span>
-          <small>数据范围：领导人论述 42 条 · 重要文章 12 篇 · 青春寄语 64 条 · 课题 25 项 · 数据库条目 36 条</small>
-        </div>
-        <div class="qa-body">
-          <div class="qa-input-row">
-            <div class="search-box">
-              <svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-              <label class="sr-only" for="qaInput">输入问题</label>
-              <input id="qaInput" type="search" placeholder="例如：总书记关于立德树人的重要论述有哪些？" autocomplete="off">
-              <button class="search-clear" id="qaClear" type="button" aria-label="清空">
-                <svg class="ic" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
-              </button>
-            </div>
-            <button class="btn btn-primary" id="qaAsk" type="button">
-              <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
-              查一下
-            </button>
-          </div>
-          <div class="qa-examples" id="qaExamples">
-            <button class="chip" type="button" data-q="总书记关于立德树人的重要论述">总书记关于立德树人的重要论述</button>
-            <button class="chip" type="button" data-q="青年要如何树立理想信念">青年要如何树立理想信念</button>
-            <button class="chip" type="button" data-q="共青团工作的政治性、先进性、群众性">共青团工作的政治性、先进性、群众性</button>
-            <button class="chip" type="button" data-q="青年和共青团工作的重要论述有哪些">青年和共青团工作的重要论述有哪些</button>
-            <button class="chip" type="button" data-q="中长期青年发展规划">中长期青年发展规划</button>
-          </div>
-          <div class="qa-answer" id="qaAnswer" hidden></div>
-        </div>
-      </div>
     </div>
   </section>
 

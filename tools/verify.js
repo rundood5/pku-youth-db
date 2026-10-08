@@ -280,7 +280,6 @@ const CHECKS = [
     name: "首页",
     expect: [
       ["#latestIssue", "hero-card-tag", "最新一期"],
-      ["#recentIssues", "issue-card", null, 4],
       ["#latestItems", "class=\"item", null, 6],
       ["#kwCloud", "chip", null, 5],
       ["@raw", "北大青年纵横", null],

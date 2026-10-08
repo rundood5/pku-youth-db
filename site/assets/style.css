@@ -1089,21 +1089,31 @@ table {
   transition: transform 0.22s var(--ease);
 }
 
-/* ---------- 11.5 首页田字格（2×2，左宽右窄）+ 豆腐块 ----------
-   布局：  最新归档期次 │ 问答窗口
-           最近更新内容 │ 豆腐块
-   左列为主内容（期次卡片、条目卡），右列为辅助（问答、豆腐块），
-   因此左列明显更宽：约 1.7 : 1（左列约 63%，右列约 37%）。
-   窄屏（<1040px）自动落回单列。 */
+/* ---------- 11.5 首页主区 + 右栏（左宽右窄）+ 豆腐块 ----------
+   布局：  最新收录内容（跨期次条目）  │  问答窗口
+        （左列约 68%）               │  豆腐块
+                                     │ （右列约 32%）
+   「最新归档期次」与「最近更新的内容」原先分别展示、
+   内容高度重合，现已合并为左列一个区块。
+   窄屏（<1100px）自动落回单列。 */
 .tian-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
+  grid-template-columns: minmax(0, 2.8fr) minmax(260px, 1fr);
   gap: var(--gap-xl) var(--gap-lg);
   align-items: start;
 }
 
 .tian-cell {
   min-width: 0;
+}
+
+/* 右栏两块的容器化（问答在上、豆腐块在下） */
+.tian-cell-qa {
+  margin-bottom: var(--gap-lg);
+}
+/* 右列第 2 块（豆腐块）紧接问答窗口之后 */
+.tian-cell-qa + .tian-cell {
+  margin-top: 0;
 }
 
 /* 田字格内的区块标题比通栏时收敛一些 */
@@ -1122,7 +1132,7 @@ table {
   margin-top: 6px;
 }
 
-/* 首页里的期次卡片改为单列，适配半宽单元格 */
+/* 期次卡片单列（数据库页或遗留布局可用） */
 .issue-grid-1col {
   grid-template-columns: 1fr;
   gap: var(--gap);

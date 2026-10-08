@@ -509,31 +509,27 @@ def page_index(data: dict) -> str:
         <div class="tian-cell" id="recentSection">
           <div class="section-head">
             <div>
-              <h2 class="section-title">最新归档期次</h2>
-              <p class="section-desc">按发布时间倒序排列，点击卡片查看该期完整概览与著录条目。</p>
+              <h2 class="section-title">最新收录内容</h2>
+              <p class="section-desc">
+                跨期次汇总最近收录的条目，按发布时间倒序排列；
+                点击标题直达原文，或进入数据库按整期查看。共已归档 %(issueCount)d 期。
+              </p>
             </div>
             <a class="section-link" href="database.html">
-              查看全部 %(issueCount)d 期
-              <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
-            </a>
-          </div>
-          <div class="issue-grid issue-grid-1col" id="recentIssues"></div>
-        </div>
-        <div class="tian-cell tian-cell-qa">
-""" + qa_html(data) + """
-        </div>
-        <div class="tian-cell">
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">最近更新的内容</h2>
-              <p class="section-desc">跨期次抽取的最新条目，标题可直接跳转原文。</p>
-            </div>
-            <a class="section-link" href="search.html">
-              去检索
+              按整期浏览 %(issueCount)d 期
               <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
             </a>
           </div>
           <div class="entry-list" id="latestItems"></div>
+          <div class="more-wrap">
+            <a class="btn btn-outline" href="database.html">
+              <svg class="ic" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+              进入重要讲话数据库
+            </a>
+          </div>
+        </div>
+        <div class="tian-cell tian-cell-qa">
+""" + qa_html(data) + """
         </div>
         <div class="tian-cell">
 """ + doufu_html() + """
@@ -565,7 +561,8 @@ def page_index(data: dict) -> str:
         "dateRangeText": cn_range(s["dateRange"][0], s["dateRange"][1]),
     }
 
-    body += qa_html(data)
+    # 注意：问答窗口只在田字格右列出现一次（见上面的 qa_html 调用），
+    # 不要在页面底部再接一次，否则会出现两个一模一样的问答模块。
 
     # 自检：占位符必须全部替换完成，否则页面上会出现 %(xxx)d 这样的字样
     if re.search(r"%\([a-zA-Z]+\)[ds]", body):
