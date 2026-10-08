@@ -148,7 +148,7 @@ def doufu_html() -> str:
         )
         cards.append(
             '        <div class="doufu">\n'
-            '          <h3 class="doufu-title">%s</h3>\n'
+            '          <h2 class="doufu-title">%s</h2>\n'
             '          <ul class="doufu-list">\n%s\n          </ul>\n'
             '          <a class="doufu-more" href="%s" target="_blank" rel="noopener noreferrer">'
             "查看更多 <svg class=\"ic\" viewBox=\"0 0 24 24\"><path d=\"M5 12h14\"/><path d=\"m13 6 6 6-6 6\"/></svg></a>\n"

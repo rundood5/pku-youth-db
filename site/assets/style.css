@@ -1243,21 +1243,35 @@ table {
   gap: 12px;
 }
 
-.side-block-head {
-  margin-bottom: 2px;
-}
-.side-title {
+/* 右栏内的两个模块标题必须完全一致：
+   问答窗口与「共青团青年发展」在版面上是同一层级，
+   字号/字重/红色竖条任一不同都会显得不协调。
+   统一按 .side-title 的规格（16px）。 */
+.tian-side .section-title,
+.tian-side .side-title {
   font-size: 16px;
-  font-family: var(--font-serif);
+  line-height: 1.3;
   padding-left: 10px;
   border-left: 4px solid var(--red-500);
-  line-height: 1.3;
 }
-.side-desc {
-  margin-top: 7px;
+/* section-title 自带 ::before 红色竖条，这里改用 border-left，
+   否则会出现两条竖条。 */
+.tian-side .section-title::before {
+  display: none;
+}
+.tian-side .section-desc,
+.tian-side .side-desc {
   font-size: 12.5px;
   color: var(--ink-3);
+  margin-top: 7px;
   line-height: 1.6;
+}
+/* 右栏两块之间留出统一间距 */
+.tian-side .section-head {
+  margin-bottom: 14px;
+}
+.tian-side .side-block-head {
+  margin-bottom: 14px;
 }
 
 /* 豆腐块：小卡片 */
