@@ -1158,9 +1158,14 @@ table {
 .tian-cell-qa .search-box {
   flex: 1 1 100%;
 }
+/* 按钮不铺满整行：窄列下铺满会出现一大块红色，视觉过重。
+   改为内容宽度并右对齐，与输入框形成层次。 */
 .tian-cell-qa .qa-input-row .btn {
-  width: 100%;
-  justify-content: center;
+  flex: 0 0 auto;
+  width: auto;
+  margin-left: auto;
+  padding: 9px 20px;
+  font-size: 14px;
 }
 .tian-cell-qa .qa-examples .chip {
   font-size: 12.5px;

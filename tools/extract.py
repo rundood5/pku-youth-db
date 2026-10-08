@@ -325,6 +325,29 @@ def award_files(no: int, title: str, base_dir: str) -> list:
     return out
 
 
+def load_summaries() -> dict:
+    """读取 tools/summaries.json（由 tools/extract_summaries.py 从源文件提取的摘要）。
+
+    返回 {序号字符串: 摘要文本}。文件不存在时返回空字典，
+    此时课题简介会退回按题目关键词自动生成。
+    """
+    path = os.path.join(TOOLS_DIR, "summaries.json")
+    if not os.path.isfile(path):
+        return {}
+    try:
+        with open(path, encoding="utf-8") as fh:
+            raw = json.load(fh)
+    except Exception:  # noqa: BLE001
+        return {}
+    out = {}
+    for k, v in (raw or {}).items():
+        if isinstance(v, dict):
+            s = (v.get("summary") or "").strip()
+            if s:
+                out[str(k)] = s
+    return out
+
+
 def load_award_projects(path: str) -> dict:
     """读取「特别贡献奖」理论研究室课题清单（xlsx）。
 
@@ -360,8 +383,18 @@ def load_award_projects(path: str) -> dict:
     file_dir = os.path.join(xlsx_dir, "理论研究室")
     if not os.path.isdir(file_dir):
         file_dir = xlsx_dir  # 兜底：结构若是平铺的也能找到
+    # 优先用从源文件提取的真实摘要；没有则退回按题目生成的介绍
+    summaries = load_summaries()
+    real = 0
     for it in items:
-        it["intro"] = award_intro(it["title"])
+        s = summaries.get(str(it["no"]))
+        if s:
+            it["intro"] = s
+            it["introSource"] = "source"      # 来自源文件
+            real += 1
+        else:
+            it["intro"] = award_intro(it["title"])
+            it["introSource"] = "generated"   # 按题目关键词生成
         it["files"] = award_files(it["no"], it["title"], file_dir)
     with_files = sum(1 for it in items if it["files"])
     return {
@@ -369,6 +402,7 @@ def load_award_projects(path: str) -> dict:
         "subtitle": "北京大学“挑战杯”系列赛事·特别贡献奖（校团委理论研究室）",
         "items": items,
         "withFiles": with_files,
+        "realIntros": real,
         "source": os.path.relpath(path, SOURCE_DIR).replace("\\", "/"),
     }
 
