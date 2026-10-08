@@ -503,26 +503,26 @@ def page_index(data: dict) -> str:
 """
 
     body += """
-  <section class="section section-alt" id="recentSection">
+  <section class="section section-alt" id="tianSection">
     <div class="wrap">
-      <div class="section-head">
-        <div>
-          <h2 class="section-title">最新归档期次</h2>
-          <p class="section-desc">按发布时间倒序排列，点击卡片查看该期完整概览与著录条目。</p>
+      <div class="tian-grid">
+        <div class="tian-cell" id="recentSection">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">最新归档期次</h2>
+              <p class="section-desc">按发布时间倒序排列，点击卡片查看该期完整概览与著录条目。</p>
+            </div>
+            <a class="section-link" href="database.html">
+              查看全部 %(issueCount)d 期
+              <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+            </a>
+          </div>
+          <div class="issue-grid issue-grid-1col" id="recentIssues"></div>
         </div>
-        <a class="section-link" href="database.html">
-          查看全部 %(issueCount)d 期
-          <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
-        </a>
-      </div>
-      <div class="issue-grid" id="recentIssues"></div>
-    </div>
-  </section>
-
-  <section class="section section-alt">
-    <div class="wrap">
-      <div class="home-split">
-        <div class="home-main">
+        <div class="tian-cell tian-cell-qa">
+""" + qa_html(data) + """
+        </div>
+        <div class="tian-cell">
           <div class="section-head">
             <div>
               <h2 class="section-title">最近更新的内容</h2>
@@ -535,7 +535,9 @@ def page_index(data: dict) -> str:
           </div>
           <div class="entry-list" id="latestItems"></div>
         </div>
+        <div class="tian-cell">
 """ + doufu_html() + """
+        </div>
       </div>
     </div>
   </section>

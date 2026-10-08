@@ -1089,7 +1089,85 @@ table {
   transition: transform 0.22s var(--ease);
 }
 
-/* ---------- 11.5 首页右栏 + 豆腐块（小栏目） ---------- */
+/* ---------- 11.5 首页田字格（2×2）+ 豆腐块 ----------
+   布局：  最新归档期次 │ 问答窗口
+           最近更新内容 │ 豆腐块
+   两列等宽，形成田字格。窄屏（<1040px）自动落回单列。 */
+.tian-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap-xl) var(--gap-lg);
+  align-items: start;
+}
+
+.tian-cell {
+  min-width: 0;
+}
+
+/* 田字格内的区块标题比通栏时收敛一些 */
+.tian-cell .section-head {
+  margin-bottom: 20px;
+}
+.tian-cell .section-title {
+  font-size: 20px;
+}
+.tian-cell .section-title::before {
+  height: 22px;
+  width: 4px;
+}
+.tian-cell .section-desc {
+  font-size: 13.5px;
+  margin-top: 6px;
+}
+
+/* 首页里的期次卡片改为单列，适配半宽单元格 */
+.issue-grid-1col {
+  grid-template-columns: 1fr;
+  gap: var(--gap);
+}
+
+/* 问答窗口放进单元格后收紧内边距 */
+.tian-cell-qa .qa-panel {
+  box-shadow: var(--sh-1);
+}
+.tian-cell-qa .qa-head {
+  padding: 13px 18px;
+  font-size: 14px;
+}
+.tian-cell-qa .qa-head small {
+  display: none; /* 半宽下这行数据范围说明会挤成两行，隐藏 */
+}
+.tian-cell-qa .qa-body {
+  padding: 16px 18px;
+}
+.tian-cell-qa .qa-answer {
+  margin-top: 16px;
+  padding-top: 15px;
+}
+.tian-cell-qa .qa-hit {
+  padding: 13px 15px;
+}
+.tian-cell-qa .qa-hit p {
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+/* 豆腐块在田字格右下角：内部两列排布，避免半宽下过长 */
+.tian-cell .doufu {
+  margin-bottom: 12px;
+}
+.tian-cell .doufu:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 1040px) {
+  .tian-grid {
+    grid-template-columns: 1fr;
+    gap: var(--gap-xl);
+  }
+}
+
+/* 旧的两栏布局保留为通用类，页面其他地方仍可使用 */
 .home-split {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 300px;
@@ -1121,7 +1199,7 @@ table {
   line-height: 1.6;
 }
 
-/* 豆腐块：右栏小卡片，比原来三栏版更紧凑 */
+/* 豆腐块：小卡片 */
 .doufu {
   background: var(--white);
   border: 1px solid var(--line);
