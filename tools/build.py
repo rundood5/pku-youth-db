@@ -455,7 +455,7 @@ def page_index(data: dict) -> str:
     <div class="wrap">
       <div class="section-head">
         <div>
-          <h2 class="section-title">三大内容板块</h2>
+          <h2 class="section-title">四大内容板块</h2>
           <p class="section-desc">库内所有内容都按统一字段著录，点进去即可看到摘要与原文入口。</p>
         </div>
       </div>
@@ -482,6 +482,18 @@ def page_index(data: dict) -> str:
              可检索具体提法的出处。</p>
           <span class="entry-foot">
             <span>%(leaderCount)d 条论述 · %(quoteCount)d 条寄语</span>
+            <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+          </span>
+        </a>
+        <a class="entry reveal" href="awards.html">
+          <span class="entry-icon">
+            <svg class="ic" viewBox="0 0 24 24"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22.5Z"/><path d="M8 7h8M8 11h6"/><path d="m9 16 1.4 1.4L13 15"/></svg>
+          </span>
+          <h3>青年工作特别贡献课题</h3>
+          <p>北京大学“挑战杯”系列赛事特别贡献奖立项课题，聚焦<b>青年和共青团工作</b>；
+             每项可展开查看<b>源文件摘要</b>与申报材料下载。</p>
+          <span class="entry-foot">
+            <span>%(awardCount)d 项课题</span>
             <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
           </span>
         </a>
@@ -559,6 +571,7 @@ def page_index(data: dict) -> str:
         "leaderCount": s["leaderCount"],
         "quoteCount": s["quoteCount"],
         "dateRangeText": cn_range(s["dateRange"][0], s["dateRange"][1]),
+        "awardCount": len((data.get("awards") or {}).get("items", [])),
     }
 
     # 注意：问答窗口只在田字格右列出现一次（见上面的 qa_html 调用），

@@ -1144,16 +1144,6 @@
         })
         .join("");
     }
-
-    // 折叠面板
-    document.addEventListener("click", function (ev) {
-      var head = ev.target.closest(".acc-head");
-      if (!head) return;
-      var body = head.nextElementSibling;
-      var open = head.getAttribute("aria-expanded") === "true";
-      head.setAttribute("aria-expanded", open ? "false" : "true");
-      if (body) body.hidden = open;
-    });
   }
 
   /* ---------------- 页面：全库检索 ---------------- */
@@ -1594,9 +1584,26 @@
     }
   }
 
+  /** 折叠面板（全站通用）
+   *  注意：必须注册在 boot 里，不能放在某个页面的函数内。
+   *  之前它被写在 pageLeaders() 里，而该函数在非论述库页面会提前 return，
+   *  导致 awards.html 的课题简介点了打不开。
+   */
+  function initAccordions() {
+    document.addEventListener("click", function (ev) {
+      var head = ev.target.closest(".acc-head");
+      if (!head) return;
+      var body = head.nextElementSibling;
+      var open = head.getAttribute("aria-expanded") === "true";
+      head.setAttribute("aria-expanded", open ? "false" : "true");
+      if (body) body.hidden = open;
+    });
+  }
+
   /* ---------------- 启动 ---------------- */
   function boot() {
     initNav();
+    initAccordions();
     fillStats();
     fillYear();
     fillCount();
