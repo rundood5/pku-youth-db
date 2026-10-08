@@ -1089,13 +1089,15 @@ table {
   transition: transform 0.22s var(--ease);
 }
 
-/* ---------- 11.5 首页田字格（2×2）+ 豆腐块 ----------
+/* ---------- 11.5 首页田字格（2×2，左宽右窄）+ 豆腐块 ----------
    布局：  最新归档期次 │ 问答窗口
            最近更新内容 │ 豆腐块
-   两列等宽，形成田字格。窄屏（<1040px）自动落回单列。 */
+   左列为主内容（期次卡片、条目卡），右列为辅助（问答、豆腐块），
+   因此左列明显更宽：约 1.7 : 1（左列约 63%，右列约 37%）。
+   窄屏（<1040px）自动落回单列。 */
 .tian-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
   gap: var(--gap-xl) var(--gap-lg);
   align-items: start;
 }
@@ -1126,41 +1128,65 @@ table {
   gap: var(--gap);
 }
 
-/* 问答窗口放进单元格后收紧内边距 */
+/* 问答窗口放进较窄的右列后进一步收紧 */
 .tian-cell-qa .qa-panel {
   box-shadow: var(--sh-1);
 }
 .tian-cell-qa .qa-head {
-  padding: 13px 18px;
-  font-size: 14px;
+  padding: 12px 16px;
+  font-size: 13.5px;
 }
 .tian-cell-qa .qa-head small {
-  display: none; /* 半宽下这行数据范围说明会挤成两行，隐藏 */
+  display: none; /* 窄列下这行数据范围说明会挤成两行，隐藏 */
 }
 .tian-cell-qa .qa-body {
-  padding: 16px 18px;
+  padding: 14px 16px;
+}
+.tian-cell-qa .qa-input-row {
+  gap: 8px;
+}
+.tian-cell-qa .search-box {
+  flex: 1 1 100%;
+}
+.tian-cell-qa .qa-input-row .btn {
+  width: 100%;
+  justify-content: center;
+}
+.tian-cell-qa .qa-examples .chip {
+  font-size: 12.5px;
+  padding: 5px 11px;
 }
 .tian-cell-qa .qa-answer {
-  margin-top: 16px;
-  padding-top: 15px;
+  margin-top: 14px;
+  padding-top: 13px;
 }
 .tian-cell-qa .qa-hit {
-  padding: 13px 15px;
+  padding: 12px 14px;
 }
 .tian-cell-qa .qa-hit p {
-  font-size: 14px;
-  line-height: 1.75;
+  font-size: 13.5px;
+  line-height: 1.72;
+}
+.tian-cell-qa .qa-hit-cite {
+  font-size: 12px;
+  gap: 5px 10px;
 }
 
-/* 豆腐块在田字格右下角：内部两列排布，避免半宽下过长 */
+/* 右列的豆腐块：窄列下字号再收一点 */
 .tian-cell .doufu {
+  padding: 13px 15px 11px;
   margin-bottom: 12px;
 }
 .tian-cell .doufu:last-child {
   margin-bottom: 0;
 }
+.tian-cell .doufu-list li {
+  font-size: 12.5px;
+  line-height: 1.6;
+}
 
-@media (max-width: 1040px) {
+/* 窗口不够宽时（右列会窄到影响问答可用性），直接落回单列 */
+@media (max-width: 1100px) {
   .tian-grid {
     grid-template-columns: 1fr;
     gap: var(--gap-xl);
