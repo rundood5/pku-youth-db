@@ -500,6 +500,9 @@
     var kw = $("#kwCloud");
     if (kw) {
       var top = ((DB.stats || {}).topKeywords || []).slice(0, 26);
+      // 关键词为空时把整块藏起来，否则页面上会留一大片空白
+      var kwSec = $("#kwSection");
+      if (kwSec) kwSec.hidden = top.length === 0;
       kw.innerHTML = top
         .map(function (pair) {
           return (
@@ -837,9 +840,12 @@
         .join("");
     }
 
-    // 上/下一期
+    // 上/下一期（只有一期时没有“上/下一期”的概念，只留返回总览）
     var pager = $("#issuePager");
-    if (pager) {
+    if (pager && DB.issues.length <= 1) {
+      pager.innerHTML =
+        '<a class="btn btn-outline" href="database.html">' + icon("grid") + "全部期次</a>";
+    } else if (pager) {
       pager.innerHTML =
         (prev
           ? '<a class="btn btn-outline" href="issue.html?no=' +
@@ -1289,7 +1295,11 @@
     // 热门关键词
     var hot = $("#gsHot");
     if (hot) {
-      hot.innerHTML = ((DB.stats || {}).topKeywords || [])
+      var hotList = (DB.stats || {}).topKeywords || [];
+      // 关键词为空时把整块藏起来，避免出现空白的“热门关键词”标题
+      var hotWrap = hot.parentElement;
+      if (hotWrap) hotWrap.hidden = hotList.length === 0;
+      hot.innerHTML = hotList
         .slice(0, 14)
         .map(function (p) {
           return (
@@ -1354,6 +1364,236 @@
       : '<tr><td colspan="5" style="text-align:center;padding:34px">未发现期号问题</td></tr>';
   }
 
+  /* ---------------- 问答窗口（库内检索问答） ----------------
+     纯静态站无法运行大模型，因此这里做的是“检索式问答”：
+     把问题拆成关键词 → 在站内已收录的全部资料里检索 → 按相关度排序 → 给出原文与出处。
+     答案只来自库内数据，不联网、不编造；查不到就如实说明查不到。
+  */
+  var QA = {
+    STOP: ("的 了 是 有 和 与 及 在 对 从 到 为 以 把 被 这 那 什么 哪些 如何 怎么 怎样 请问 关于 " +
+           "重要 论述 讲话 精神 指出 强调 要求 我们 你们 他们 一个 进行 开展 以及 并且 而且 " +
+           "a an the of and or to in on for is are what how").split(/\s+/),
+
+    /** 把问题切成关键词
+     *  先剥掉疑问语气与助词，再补 3/4 字片段。
+     *  不用 2 字片段：实测会产生“记关”“人的”这类噪音，把无关长文排到前面。
+     */
+    keywords: function (q) {
+      var raw = String(q || "")
+        .replace(/[？?！!。，,、；;：:“”"'（）()《》〈〉\[\]【】\s]+/g, " ")
+        .trim();
+      if (!raw) return [];
+      var base = [];
+      raw.split(/\s+/).forEach(function (p) {
+        // 去掉疑问词、助词、以及“总书记关于…的重要论述”这类套话
+        p = p
+          .replace(/^(请问|请|我想问|想问)/, "")
+          .replace(/(有哪些|是什么|怎么样|怎么办|怎么|如何|哪些|什么|关于|对于|的重要论述|重要论述|的论述|论述|讲话|精神)$/g, "")
+          .replace(/^(总书记|习近平总书记|习近平)/, "")
+          .replace(/[的了呢吗]/g, "");
+        if (!p || p.length < 2) return;
+        if (QA.STOP.indexOf(p) !== -1) return;
+        base.push(p);
+      });
+      var extra = [];
+      base.forEach(function (w) {
+        if (/^[\u4e00-\u9fff]+$/.test(w) && w.length >= 3) {
+          for (var len = 3; len <= 4; len++) {
+            for (var i = 0; i + len <= w.length; i++) extra.push(w.substr(i, len));
+          }
+        }
+      });
+      return base.concat(extra).filter(function (v, i, a) {
+        return a.indexOf(v) === i;
+      });
+    },
+
+    /** 组装可检索的资料全集 */
+    corpus: function () {
+      var docs = [];
+      (DB.leaders || []).forEach(function (r) {
+        docs.push({
+          text: r.quote, kind: "领导人论述",
+          title: r.leader + "　" + (r.occasion || ""),
+          meta: [r.leader, r.time, r.occasion].filter(Boolean).join(" · "),
+          hay: [r.leader, r.time, r.occasion, r.nature, r.quote].join(" ").toLowerCase()
+        });
+      });
+      ((DB.xiQuotes || {}).parts || []).forEach(function (p) {
+        (p.topics || []).forEach(function (t) {
+          (t.quotes || []).forEach(function (q) {
+            docs.push({
+              text: q.text, kind: "青春寄语", title: t.title || "寄语", meta: q.cite || "",
+              hay: [q.text, q.cite, t.title].join(" ").toLowerCase()
+            });
+          });
+        });
+      });
+      ((DB.xiArticles || {}).items || []).forEach(function (a) {
+        var body = flat(a.body || "");
+        docs.push({
+          text: body.slice(0, 420), kind: "重要文章", title: a.title, meta: a.dateISO || "",
+          hay: [a.title, body].join(" ").toLowerCase()
+        });
+      });
+      allItems().forEach(function (it) {
+        docs.push({
+          text: it.summary || it.summaryShort || "", kind: "数据库条目", title: it.title,
+          meta: [it.issueLabel, it.source, it.pubdate].filter(Boolean).join(" · "),
+          hay: [it.title, it.summary, (it.keywords || []).join(" "), it.source].join(" ").toLowerCase()
+        });
+      });
+      (((DB.awards || {}).items) || []).forEach(function (a) {
+        docs.push({
+          text: "课题名称：" + a.title + "　负责人：" + (a.owner || "—"),
+          kind: "课题", title: a.title, meta: "特别贡献奖 · 序号 " + a.no,
+          hay: [a.title, a.owner, "课题"].join(" ").toLowerCase()
+        });
+      });
+      return docs.filter(function (d) {
+        return d.text && d.text.length > 4;
+      });
+    },
+
+    /** 检索并打分
+     *  用 IDF 加权：越少见的词权重越高，这样“立德树人”比“青年”更能左右排序。
+     *  否则任何含“青年”的长文都会压过真正切题的内容。
+     */
+    search: function (question, limit) {
+      var kws = QA.keywords(question);
+      if (!kws.length) return { kws: [], hits: [] };
+      var docs = QA.corpus();
+
+      // 先算每个关键词的文档频率，得到 IDF
+      var df = {};
+      kws.forEach(function (k) {
+        var n = 0;
+        docs.forEach(function (d) {
+          if (d.hay.indexOf(k) !== -1) n++;
+        });
+        df[k] = n;
+      });
+      var total = docs.length;
+      function idf(k) {
+        return Math.log(1 + total / (1 + df[k]));
+      }
+
+      var hits = [];
+      docs.forEach(function (d) {
+        var score = 0, matched = 0, weightSum = 0;
+        kws.forEach(function (k) {
+          var n = d.hay.split(k).length - 1;
+          if (n > 0) {
+            matched++;
+            var w = idf(k);
+            weightSum += w;
+            score += Math.min(n, 3) * w;
+            // 命中标题额外加权：标题切题度最高
+            if (d.title.toLowerCase().indexOf(k) !== -1) score += w * 2.5;
+          }
+        });
+        if (matched > 0) {
+          // 命中的“权重种类”越多越相关
+          score += matched * 1.5 + weightSum;
+          // 轻微偏好短文本（更聚焦），但不要过度惩罚长文
+          score = score / (1 + Math.log(1 + d.text.length / 400));
+          hits.push({ doc: d, score: score, matched: matched });
+        }
+      });
+      hits.sort(function (a, b) {
+        return b.score - a.score || b.matched - a.matched;
+      });
+      return { kws: kws, hits: hits.slice(0, limit || 5) };
+    }
+  };
+
+  function pageQA() {
+    var input = $("#qaInput");
+    var host = $("#qaAnswer");
+    if (!input || !host) return;
+
+    var examples = $("#qaExamples");
+    var askBtn = $("#qaAsk");
+    var clearBtn = $("#qaClear");
+    var box = input.closest(".search-box");
+
+    function render(question) {
+      var q = String(question || "").trim();
+      if (!q) {
+        host.hidden = true;
+        host.innerHTML = "";
+        return;
+      }
+      var res = QA.search(q, 5);
+      host.hidden = false;
+
+      if (!res.hits.length) {
+        host.innerHTML =
+          '<div class="qa-empty">在库内没有检索到与「' + esc(q) + "」直接相关的资料。<br>" +
+          "可以换个说法，或试试上面推荐的问题。</div>";
+        return;
+      }
+
+      var kwForMark = res.kws.filter(function (k) {
+        return k.length >= 2;
+      }).join(" ");
+
+      var hits = res.hits
+        .map(function (h) {
+          var d = h.doc;
+          var body = d.text.length > 320 ? d.text.slice(0, 320) + "……" : d.text;
+          return (
+            '<div class="qa-hit"><p>' + highlight(body, kwForMark) + "</p>" +
+            '<div class="qa-hit-cite">' +
+            "<span>" + icon("book") + esc(d.kind) + "</span>" +
+            "<span>" + icon("source") + esc(d.title) + "</span>" +
+            (d.meta ? "<span>" + icon("calendar") + esc(d.meta) + "</span>" : "") +
+            "</div></div>"
+          );
+        })
+        .join("");
+
+      var first = res.hits[0].doc;
+      host.innerHTML =
+        '<div class="qa-answer-head">' + icon("info") +
+        "<span>根据库内资料，与「<b>" + esc(q) + "</b>」最相关的是 <b>" + res.hits.length + "</b> 条，" +
+        "首条出自" + esc(first.kind) + "《" + esc(first.title) + "》</span></div>" +
+        hits +
+        '<div class="qa-answer-head" style="margin-top:18px;margin-bottom:0">' + icon("alert") +
+        "<span>说明：本站是静态资料库，此窗口在已收录资料中检索原文并给出出处，" +
+        "不接入大模型、不联网、不做改写。需要完整上下文请查看对应页面或原文链接。</span></div>";
+    }
+
+    askBtn.addEventListener("click", function () {
+      render(input.value);
+    });
+    input.addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter") {
+        ev.preventDefault();
+        render(input.value);
+      }
+    });
+    input.addEventListener("input", function () {
+      if (box) box.classList.toggle("has-value", !!input.value);
+    });
+    clearBtn.addEventListener("click", function () {
+      input.value = "";
+      if (box) box.classList.remove("has-value");
+      host.hidden = true;
+      host.innerHTML = "";
+      input.focus();
+    });
+    if (examples) {
+      examples.addEventListener("click", function (ev) {
+        var b = ev.target.closest(".chip");
+        if (!b) return;
+        input.value = b.getAttribute("data-q") || b.textContent;
+        if (box) box.classList.add("has-value");
+        render(input.value);
+      });
+    }
+  }
+
   /* ---------------- 启动 ---------------- */
   function boot() {
     initNav();
@@ -1366,6 +1606,7 @@
     pageLeaders();
     pageSearch();
     pageAbout();
+    pageQA();
     initReveal(document);
   }
 
@@ -1381,6 +1622,8 @@
     getIssue: getIssue,
     allItems: allItems,
     icon: icon,
-    esc: esc
+    esc: esc,
+    // 问答检索逻辑对外暴露，便于 tools/verify-qa.js 直接做自检
+    QA: QA
   };
 })();

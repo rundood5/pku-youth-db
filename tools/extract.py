@@ -39,6 +39,8 @@ SOURCE_DIR = os.path.join(ROOT, "source")
 OUT_FILE = os.path.join(ROOT, "site", "data", "content.json")
 
 ISSUE_DIR = os.path.join(SOURCE_DIR, "2.北大青年纵横", "主文件")
+FILTER_FILE = os.path.join(TOOLS_DIR, "filter-list.txt")
+AWARD_XLSX = os.path.join(SOURCE_DIR, "特别贡献奖", "特别贡献奖", "特别贡献奖申报", "理论研究室.xlsx")
 LEADER_DOC = os.path.join(
     SOURCE_DIR,
     "1.党和国家领导人关于共青团及青年工作重要论述",
@@ -203,6 +205,81 @@ def split_section_title(raw: str):
     if num is None or len(raw) > 40:
         return None, raw
     return num, title
+
+
+def load_relevance_rules(path: str) -> dict:
+    """读取 filter-list.txt 的收录白名单。
+
+    返回 {"include": [...], "exclude": [...]}。
+    文件不存在时返回空规则（表示全部收录），避免误删。
+    """
+    rules = {"include": [], "exclude": []}
+    if not os.path.isfile(path):
+        return rules
+    section = None
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            s = line.strip()
+            if not s or s.startswith("#"):
+                continue
+            if s.startswith("[") and s.endswith("]"):
+                key = s[1:-1].strip().lower()
+                section = key if key in ("include", "exclude") else None
+                continue
+            if section:
+                rules[section].append(s.lower())
+    return rules
+
+
+def is_relevant(title: str, summary: str, rules: dict) -> bool:
+    """判断条目是否与「青年和共青团工作」相关。
+
+    白名单为空时一律收录（避免规则文件损坏导致整站空白）。
+    """
+    inc, exc = rules["include"], rules["exclude"]
+    if not inc:
+        return True
+    hay = ("%s %s" % (title or "", summary or "")).lower()
+    if any(k in hay for k in exc):
+        return False
+    return any(k in hay for k in inc)
+
+
+def load_award_projects(path: str) -> dict:
+    """读取「特别贡献奖」理论研究室课题清单（xlsx）。
+
+    版式：第 1 行是部门名，第 2 行是表头（序号/作品题目/负责人），其后为数据行。
+    """
+    if not os.path.isfile(path):
+        return {"title": "共青团与青年工作课题", "items": [], "source": ""}
+    try:
+        import openpyxl
+    except ImportError:
+        return {"title": "共青团与青年工作课题", "items": [], "source": "（缺少 openpyxl，未能解析）"}
+
+    wb = openpyxl.load_workbook(path, data_only=True)
+    ws = wb.worksheets[0]
+    items = []
+    for row in ws.iter_rows(values_only=True):
+        cells = ["" if c is None else str(c).strip() for c in row]
+        if len(cells) < 3:
+            continue
+        no, title, owner = cells[0], cells[1], cells[2]
+        # 跳过表头与说明行
+        if no in ("序号", "") and title in ("作品题目", ""):
+            continue
+        if not title or title in ("作品题目",):
+            continue
+        if not no.isdigit():
+            continue
+        items.append({"no": int(no), "title": title, "owner": owner})
+    items.sort(key=lambda x: x["no"])
+    return {
+        "title": "共青团与青年工作课题",
+        "subtitle": "北京大学“挑战杯”系列赛事·特别贡献奖（校团委理论研究室）",
+        "items": items,
+        "source": os.path.relpath(path, SOURCE_DIR).replace("\\", "/"),
+    }
 
 
 def parse_issue(path: str) -> dict:
@@ -704,8 +781,37 @@ def main():
                 print("解析失败 %s: %s" % (name, exc))
     issues.sort(key=lambda it: it["issue"])
 
+    # ---- 按相关性过滤：剔除与青年和共青团工作无关的条目 ----
+    rules = load_relevance_rules(FILTER_FILE)
+    dropped_entries = 0
+    dropped_issues = []
+    for it in issues:
+        # 先记住过滤前的条数，否则后面无从统计剔除了多少
+        it["origEntryCount"] = len(it["entries"])
+        kept = []
+        for e in it["entries"]:
+            if is_relevant(e.get("title", ""), e.get("summaryShort", ""), rules):
+                kept.append(e)
+            else:
+                dropped_entries += 1
+        it["entries"] = kept
+        it["entryCount"] = len(kept)
+        it["droppedCount"] = it["origEntryCount"] - len(kept)
+
+    # 条目被全部剔除的期次不再展示
+    dropped_issues = [it["label"] for it in issues if it["entryCount"] == 0]
+    issues = [it for it in issues if it["entryCount"] > 0]
+    # 过滤后各字段需要重算，否则卡片上的分类标签会残留已删除条目的内容
+    for it in issues:
+        it["categories"] = sorted({e.get("category", "") for e in it["entries"] if e.get("category")})
+        it["keywords"] = sorted({k for e in it["entries"] for k in e.get("keywords", [])})
+        it["sources"] = sorted({e.get("source", "") for e in it["entries"] if e.get("source")})
+
     # ---- 领导人论述 ----
     leaders = parse_leaders(LEADER_DOC) if os.path.isfile(LEADER_DOC) else []
+
+    # ---- 特别贡献奖课题 ----
+    awards = load_award_projects(AWARD_XLSX)
 
     # ---- 习近平文章 / 寄语 ----
     xi_articles = {"title": "习近平总书记关于共青团与青年工作重要文章汇总", "items": []}
@@ -732,13 +838,23 @@ def main():
             # 两者含义不同，页面上的导航栏/页脚用 title，数据库模块用 subtitle。
             "title": "北大青年纵横",
             "subtitle": "重要讲话与最新提法数据库",
-            "org": "共青团北京大学委员会",
+            # 不标注主办单位：本站是资料汇编性质的检索工具，
+            # 不作为任何单位的官方发布渠道。
+            "org": "北大青年纵横 · 学习资料库",
+            "official": False,
             "generated": date.today().isoformat(),
             "footerLinks": FOOTER_LINKS,
         },
         "stats": stats,
         "quality": quality,
         "issues": issues,
+        "awards": awards,
+        "filterInfo": {
+            "rules": rules["include"],
+            "droppedEntries": dropped_entries,
+            "droppedIssues": dropped_issues,
+            "keptEntries": sum(it["entryCount"] for it in issues),
+        },
         "leaders": leaders,
         "xiArticles": xi_articles,
         "xiQuotes": xi_quotes,

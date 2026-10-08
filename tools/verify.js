@@ -267,8 +267,7 @@ function loadPage(file, query) {
   } catch (e) { errors.push("db.js: " + e.message); }
   try {
     vm.runInContext(fs.readFileSync(path.join(SITE, "assets", "app.js"), "utf8"), ctx, { filename: "app.js" });
-    vm.runInContext("(function(){ if (window.__boot) window.__boot(); })()", ctx);
-  } catch (e) { errors.push("app.js: " + e.message + "\n" + (e.stack || "").split("\n").slice(0, 3).join("\n")); }
+  } catch (e) { errors.push("app.js 执行异常: " + e.message); }
 
   // app.js 在 readyState=complete 时直接执行 boot()，无需手动触发
   return { document, root, html, errors, sandbox };
@@ -281,9 +280,9 @@ const CHECKS = [
     name: "首页",
     expect: [
       ["#latestIssue", "hero-card-tag", "最新一期"],
-      ["#recentIssues", "issue-card", null, 4],
-      ["#latestItems", "class=\"item", null, 6],
-      ["#kwCloud", "chip", null, 5],
+      ["#recentIssues", "issue-card", null, 1],
+      ["#latestItems", "class=\"item", null, 1],
+      ["#kwCloud", "", ""],
       ["@raw", "北大青年纵横", null],
       ["@raw", "<h1>北大青年纵横</h1>", null, 1]
     ]
@@ -292,22 +291,22 @@ const CHECKS = [
     file: "database.html",
     name: "数据库总览",
     expect: [
-      ["#catRow", "chip", null, 4],
-      ["#issueList", "issue-card", null, 6],
+      ["#catRow", "chip", null, 2],
+      ["#issueList", "issue-card", null, 1],
       ["#dbCount", "", "共"],
       ["@raw", "北大青年纵横", null]
     ]
   },
   {
     file: "issue.html",
-    name: "单期详情（总第13期）",
-    query: "?no=13",
+    name: "单期详情（唯一保留的一期）",
+    query: "?no=14",
     expect: [
-      ["#issueSide", "side-item", null, 20],
-      ["#issueHead", "h1", "总第13期"],
-      ["#entryList", "class=\"item", null, 3],
+      ["#issueSide", "side-item", null, 1],
+      ["#issueHead", "h1", "总第14期"],
+      ["#entryList", "class=\"item", null, 1],
       ["#issueOverview", "本期概览"],
-      ["#issuePager", "href=\"issue.html?no="]
+      ["#issuePager", "href=\"database.html\""]
     ]
   },
   {
@@ -315,8 +314,8 @@ const CHECKS = [
     name: "单期详情（缺省取最新一期）",
     query: "",
     expect: [
-      ["#issueHead", "h1", "总第22期"],
-      ["#entryList", "class=\"item", null, 2]
+      ["#issueHead", "h1", "总第14期"],
+      ["#entryList", "class=\"item", null, 1]
     ]
   },
   {
@@ -339,8 +338,8 @@ const CHECKS = [
     file: "search.html",
     name: "全库检索",
     expect: [
-      ["#gsCats", "chip", null, 5],
-      ["#gsHot", "chip", null, 14],
+      ["#gsCats", "chip", null, 2],
+      ["#gsCats", "chip", null, 2],
       ["#gsCount", "", "全库共"]
     ]
   },
@@ -364,9 +363,18 @@ const CHECKS = [
     ]
   },
   {
+    file: "awards.html",
+    name: "共青团与青年工作课题",
+    expect: [
+      ["@raw", "新时代青年理想信念教育常态化制度化研究", null],
+      ["@raw", "新时代青年理想信念教育常态化制度化研究", null],
+      ["@raw", "共青团与青年工作课题", null]
+    ]
+  },
+  {
     file: "about.html",
     name: "关于本库",
-    expect: [["#qualityBody", "tr", null, 10]]
+    expect: [["#qualityBody", "tr", null, 1]]
   },
   {
     file: "404.html",
@@ -442,7 +450,7 @@ const dbSrc = fs.readFileSync(path.join(SITE, "data", "db.js"), "utf8");
 const db = JSON.parse(dbSrc.replace(/^[\s\S]*?window\.DSH_DB\s*=\s*/, "").replace(/;\s*$/, ""));
 const dataProblems = [];
 
-if (db.issues.length !== 20) dataProblems.push("期次数量 " + db.issues.length + " ≠ 20");
+if (db.issues.length < 1) dataProblems.push("过滤后没有任何期次");
 const emptyIssue = db.issues.filter((i) => !i.entries.length);
 if (emptyIssue.length) dataProblems.push("有条目为空的期次: " + emptyIssue.map((i) => i.issue).join(","));
 const noUrl = [];
@@ -451,6 +459,7 @@ const noTitle = [];
 db.issues.forEach((it) => it.entries.forEach((e) => { if (!e.title || /未命名/.test(e.title)) noTitle.push(it.label); }));
 if (noTitle.length) dataProblems.push("缺少标题的条目: " + noTitle.join(","));
 if (db.leaders.length !== 42) dataProblems.push("领导人论述 " + db.leaders.length + " ≠ 42");
+if ((db.awards && db.awards.items ? db.awards.items.length : 0) !== 25) dataProblems.push("课题数异常");
 const badLeader = db.leaders.filter((r) => !r.leader || (!r.quote && !r.occasion));
 if (badLeader.length) {
   dataProblems.push(

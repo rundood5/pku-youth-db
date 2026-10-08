@@ -1089,7 +1089,239 @@ table {
   transition: transform 0.22s var(--ease);
 }
 
-/* ---------- 12. 标签 / 徽章 ---------- */
+/* ---------- 11.5 豆腐块（共青团青年发展小栏目） ---------- */
+.doufu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap-lg);
+}
+
+.doufu {
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 22px 24px 18px;
+  box-shadow: var(--sh-1);
+  transition: transform 0.22s var(--ease), box-shadow 0.22s var(--ease),
+    border-color 0.22s var(--ease);
+}
+.doufu:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--sh-2);
+  border-color: var(--navy-100);
+}
+
+/* 标题：仿参考图的红色短横线 */
+.doufu-title {
+  font-size: 17px;
+  font-family: var(--font-serif);
+  padding-bottom: 11px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+}
+.doufu-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 42px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--red-500);
+}
+
+.doufu-list {
+  display: grid;
+  gap: 12px;
+  flex: 1;
+}
+.doufu-list li {
+  position: relative;
+  padding-left: 15px;
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+.doufu-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ink-4);
+}
+.doufu-list a {
+  color: var(--ink-2);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+}
+.doufu-list a:hover {
+  color: var(--red-600);
+}
+.doufu-list a .ic {
+  width: 12px;
+  height: 12px;
+  opacity: 0;
+  transition: opacity 0.18s var(--ease);
+  flex: none;
+}
+.doufu-list a:hover .ic {
+  opacity: 1;
+}
+
+.doufu-more {
+  margin-top: 16px;
+  padding-top: 13px;
+  border-top: 1px solid var(--line-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+.doufu-more:hover {
+  color: var(--red-600);
+}
+.doufu-more .ic {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 1080px) {
+  .doufu-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 720px) {
+  .doufu-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- 11.6 问答窗口 ---------- */
+.qa-panel {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-2);
+  overflow: hidden;
+}
+
+.qa-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 22px;
+  background: linear-gradient(135deg, var(--navy-800), var(--navy-700));
+  color: #fff;
+  font-size: 15px;
+}
+.qa-head .ic {
+  color: var(--gold-300);
+}
+.qa-head small {
+  margin-left: auto;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.62);
+  font-weight: 400;
+}
+
+.qa-body {
+  padding: 22px;
+}
+
+.qa-input-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.qa-input-row .search-box {
+  flex: 1 1 320px;
+}
+
+.qa-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.qa-examples .chip {
+  font-size: 13px;
+  padding: 6px 13px;
+}
+
+.qa-answer {
+  margin-top: 22px;
+  border-top: 1px dashed var(--line);
+  padding-top: 20px;
+}
+.qa-answer[hidden] {
+  display: none;
+}
+
+.qa-answer-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  color: var(--ink-3);
+  margin-bottom: 16px;
+}
+.qa-answer-head b {
+  color: var(--navy-800);
+}
+
+.qa-hit {
+  background: var(--paper-2);
+  border: 1px solid var(--line-2);
+  border-left: 3px solid var(--red-500);
+  border-radius: 0 var(--r) var(--r) 0;
+  padding: 16px 18px;
+}
+.qa-hit + .qa-hit {
+  margin-top: 12px;
+}
+.qa-hit p {
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--ink-2);
+  text-align: justify;
+}
+.qa-hit-cite {
+  margin-top: 11px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+  font-size: 12.5px;
+  color: var(--ink-3);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+}
+.qa-hit-cite span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.qa-hit-cite .ic {
+  width: 13px;
+  height: 13px;
+  color: var(--ink-4);
+}
+
+.qa-empty {
+  padding: 26px 4px;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 14.5px;
+}
+
+
 .tag {
   display: inline-flex;
   align-items: center;

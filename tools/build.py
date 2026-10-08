@@ -35,6 +35,7 @@ NAV_ITEMS = [
     ("index.html", "首页"),
     ("database.html", "重要讲话数据库"),
     ("leaders.html", "领导人论述库"),
+    ("awards.html", "青年工作课题"),
     ("search.html", "全库检索"),
     ("about.html", "关于本库"),
 ]
@@ -63,12 +64,115 @@ BRAND_MARK = (
 SITE_NAME = "北大青年纵横"
 DB_NAME = "重要讲话与最新提法数据库"
 SITE_TAGLINE = "学习资料库"
-ORG_NAME = "共青团北京大学委员会"
+# 不标注主办单位。本站是资料汇编性质的检索工具，不作为任何单位的官方发布渠道。
+# 页脚只保留中立署名，避免造成“官方发布”的印象。
+ORG_NAME = "北大青年纵横 · 学习资料库"
 
 META_DESC = (
     "北大青年纵横：荟萃时代嘉言，拓思青年纵横。收录党和国家领导人关于青年和共青团工作的重要论述，"
     "以及《重要讲话与最新提法数据库》各期政策文件与权威文章，支持关键词检索与原文跳转。"
 )
+
+# --------------------------------------------------------------------------
+# 「豆腐块」小栏目数据
+#   三块横向小栏目，条目为真实可访问的中国共青团网栏目与权威来源链接。
+#   栏目地址已逐个核实（见 tools/check_links.py 的输出）。
+#   更新方式：直接增删下面的条目即可，不需要改动页面结构。
+# --------------------------------------------------------------------------
+DOUFU_BLOCKS = [
+    {
+        "title": "规范性文件",
+        "more": "https://www.gqt.org.cn/xxgk/",
+        "items": [
+            {
+                "text": "共青团中央 教育部印发《关于落实党建带团建制度机制 深化高校共青团工作的意见》的通知",
+                "url": "https://www.gqt.org.cn/xxgk/tngz_gfwj/",
+            },
+            {
+                "text": "共青团中央办公厅关于印发《深化新兴领域青年服务体系建设方案》的通知",
+                "url": "https://www.gqt.org.cn/xxgk/tngz_gfwj/",
+            },
+            {
+                "text": "团内规章和规范性文件（信息公开专栏）",
+                "url": "https://www.gqt.org.cn/xxgk/",
+            },
+        ],
+    },
+    {
+        "title": "青年发展",
+        "more": "https://www.gqt.org.cn/sylm/qnfzgh/",
+        "items": [
+            {
+                "text": "《中长期青年发展规划（2016—2025年）》",
+                "url": "https://www.gov.cn/gongbao/content/2017/content_5189005.htm",
+            },
+            {
+                "text": "中长期青年发展规划实施情况",
+                "url": "https://www.gqt.org.cn/sylm/qnfzgh/",
+            },
+            {
+                "text": "青年发展统计监测情况",
+                "url": "https://www.gqt.org.cn/sylm/qnfzgh/",
+            },
+        ],
+    },
+    {
+        "title": "全团要讯",
+        "more": "https://www.gqt.org.cn/tngz/",
+        "items": [
+            {
+                "text": "全团要讯（共青团中央工作动态）",
+                "url": "https://www.gqt.org.cn/tngz/",
+            },
+            {
+                "text": "共青团中央工作动态与调研报道",
+                "url": "https://qnzz.youth.cn/gzdt/",
+            },
+            {
+                "text": "中国共青团网 · 共青团中央网站",
+                "url": "https://www.gqt.org.cn/",
+            },
+        ],
+    },
+]
+
+
+def doufu_html() -> str:
+    """生成「豆腐块」三栏小模块的 HTML。"""
+    cards = []
+    for blk in DOUFU_BLOCKS:
+        lis = "\n".join(
+            '            <li><a href="%s" target="_blank" rel="noopener noreferrer">%s%s</a></li>'
+            % (it["url"], it["text"],
+               '<svg class="ic" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4 11 13"/>'
+               '<path d="M18 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/></svg>')
+            for it in blk["items"]
+        )
+        cards.append(
+            '      <div class="doufu reveal">\n'
+            '        <h3 class="doufu-title">%s</h3>\n'
+            '        <ul class="doufu-list">\n%s\n        </ul>\n'
+            '        <a class="doufu-more" href="%s" target="_blank" rel="noopener noreferrer">'
+            "查看更多 <svg class=\"ic\" viewBox=\"0 0 24 24\"><path d=\"M5 12h14\"/><path d=\"m13 6 6 6-6 6\"/></svg></a>\n"
+            "      </div>" % (blk["title"], lis, blk["more"])
+        )
+    return (
+        '  <section class="section section-alt" id="dofu">\n'
+        '    <div class="wrap">\n'
+        '      <div class="section-head">\n'
+        "        <div>\n"
+        '          <h2 class="section-title">共青团青年发展</h2>\n'
+        '          <p class="section-desc">共青团有关青年发展的规范性文件、调研信息与全团要讯，'
+        "点击即可直达中国共青团网等权威来源。</p>\n"
+        "        </div>\n"
+        '        <a class="section-link" href="https://www.gqt.org.cn/" target="_blank" rel="noopener noreferrer">'
+        '访问中国共青团网 <svg class="ic" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4 11 13"/>'
+        '<path d="M18 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/></svg></a>\n'
+        "      </div>\n"
+        '      <div class="doufu-grid">\n' + "\n".join(cards) + "\n      </div>\n"
+        "    </div>\n"
+        "  </section>\n"
+    )
 
 
 # --------------------------------------------------------------------------
@@ -92,6 +196,72 @@ def cn_range(a: str, b: str) -> str:
         return "%s年%d月%d日 — %d月%d日" % (
             ma.group(1), int(ma.group(2)), int(ma.group(3)), int(mb.group(2)), int(mb.group(3)))
     return "%s — %s" % (cn_date(a), cn_date(b))
+
+
+def qa_html(data: dict) -> str:
+    """问答窗口模块。
+
+    设计说明：本站是纯静态站点，无法运行大模型，因此这里做的是
+    “库内检索问答”——把问题拆成关键词，在站内已收录的资料里检索原文，
+    按相关度排序后给出答案片段与出处。答案全部来自库内，不联网、不编造。
+    """
+    s = data.get("stats", {})
+    scope = "数据范围：领导人论述 %d 条 · 重要文章 %d 篇 · 青春寄语 %d 条 · 课题 %d 项 · 数据库条目 %d 条" % (
+        s.get("leaderCount", 0), s.get("xiArticleCount", 0), s.get("quoteCount", 0),
+        len(data.get("awards", {}).get("items", [])), s.get("entryCount", 0))
+    examples = [
+        "总书记关于立德树人的重要论述",
+        "青年要如何树立理想信念",
+        "共青团工作的政治性、先进性、群众性",
+        "青年和共青团工作的重要论述有哪些",
+        "中长期青年发展规划",
+    ]
+    chips = "\n".join(
+        '            <button class="chip" type="button" data-q="%s">%s</button>' % (e, e)
+        for e in examples
+    )
+    return """
+  <section class="section" id="qa">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">问答窗口</h2>
+          <p class="section-desc">
+            输入问题，系统在<strong>本站已收录的资料</strong>中检索原文并给出出处。只查库内内容，不联网、不编造。
+          </p>
+        </div>
+      </div>
+
+      <div class="qa-panel">
+        <div class="qa-head">
+          <svg class="ic ic-lg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <span>库内检索问答</span>
+          <small>%s</small>
+        </div>
+        <div class="qa-body">
+          <div class="qa-input-row">
+            <div class="search-box">
+              <svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <label class="sr-only" for="qaInput">输入问题</label>
+              <input id="qaInput" type="search" placeholder="例如：总书记关于立德树人的重要论述有哪些？" autocomplete="off">
+              <button class="search-clear" id="qaClear" type="button" aria-label="清空">
+                <svg class="ic" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <button class="btn btn-primary" id="qaAsk" type="button">
+              <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+              查一下
+            </button>
+          </div>
+          <div class="qa-examples" id="qaExamples">
+%s
+          </div>
+          <div class="qa-answer" id="qaAnswer" hidden></div>
+        </div>
+      </div>
+    </div>
+  </section>
+""" % (scope, chips)
 
 
 def nav_html(active: str) -> str:
@@ -182,7 +352,7 @@ def footer_html(site_meta: dict) -> str:
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© <span data-year>2026</span> %s · 数据整理自公开权威来源，仅供学习研究使用</span>
+        <span>© <span data-year>2026</span> 北大青年纵横 · 本站为学习资料汇编，内容整理自公开来源，<strong>非任何单位官方发布</strong></span>
         <span class="tag">数据更新：%s</span>
       </div>
     </div>
@@ -190,7 +360,7 @@ def footer_html(site_meta: dict) -> str:
 
   <button class="to-top" type="button" aria-label="返回顶部">
     <svg class="ic" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="m6 11 6-6 6 6"/></svg>
-  </button>""" % (link_items, site_meta.get("org", ""), site_meta.get("generated", ""))
+  </button>""" % (link_items, site_meta.get("generated", ""))
 
 
 def shell(title: str, desc: str, active: str, body: str, site_meta: dict, path_prefix: str = "") -> str:
@@ -226,6 +396,8 @@ def shell(title: str, desc: str, active: str, body: str, site_meta: dict, path_p
 # --------------------------------------------------------------------------
 def page_index(data: dict) -> str:
     s = data["stats"]
+    # 注意：这里拼接了 doufu_html()，所以整段必须用括号包起来，
+    # 否则 % 只会作用于最后一段字符串（曾因此导致占位符 %(issueCount)d 原样输出）。
     body = """  <section class="hero">
     <img class="hero-emblem" src="assets/pku-emblem.png" alt="" aria-hidden="true" decoding="async">
     <div class="wrap hero-grid">
@@ -233,12 +405,6 @@ def page_index(data: dict) -> str:
         <span class="eyebrow"><span class="eyebrow-dot"></span>数据持续更新 · 已归档 %(issueCount)d 期</span>
         <h1>北大青年纵横</h1>
         <p class="hero-couplet"><span>荟萃时代嘉言</span><i class="cp-dot" aria-hidden="true"></i><span>拓思青年纵横</span></p>
-        <p class="hero-lede">
-          这里是共青团北京大学委员会的学习资料库。以<b>青年和共青团工作</b>为主线，
-          收录党和国家领导人的重要论述，按期次归档《重要讲话与最新提法数据库》各期所涉政策文件、
-          党报党刊文章与权威发布，逐条著录标题、时间、来源、原文链接、关键词与观点速览，
-          可全文检索、可直达原文。
-        </p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="database.html">
             <svg class="ic" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg>
@@ -342,8 +508,12 @@ def page_index(data: dict) -> str:
       </div>
     </div>
   </section>
+"""
 
-  <section class="section">
+    # 豆腐块单独拼接，避免把 % 格式化的作用范围切断
+    body += doufu_html()
+    body += """
+  <section class="section" id="recentSection">
     <div class="wrap">
       <div class="section-head">
         <div>
@@ -375,7 +545,7 @@ def page_index(data: dict) -> str:
     </div>
   </section>
 
-  <section class="section">
+  <section class="section" id="kwSection">
     <div class="wrap">
       <div class="section-head">
         <div>
@@ -386,13 +556,24 @@ def page_index(data: dict) -> str:
       <div class="chip-row" id="kwCloud"></div>
     </div>
   </section>
-""" % {
+""" 
+    # 关键：% 只能作用于紧邻的一个字符串字面量，
+    # 因此这里先把 body 整体赋回，再统一做一次格式化，
+    # 否则前面拼接进来的段落里的 %(xxx)d 不会被替换。
+    body = body % {
         "issueCount": s["issueCount"],
         "entryCount": s["entryCount"],
         "leaderCount": s["leaderCount"],
         "quoteCount": s["quoteCount"],
         "dateRangeText": cn_range(s["dateRange"][0], s["dateRange"][1]),
     }
+
+    body += qa_html(data)
+
+    # 自检：占位符必须全部替换完成，否则页面上会出现 %(xxx)d 这样的字样
+    if re.search(r"%\([a-zA-Z]+\)[ds]", body):
+        raise SystemExit("首页生成失败：存在未替换的格式占位符，请检查 body 的 % 作用范围")
+
     return shell(
         "北大青年纵横 · 学习资料库",
         META_DESC,
@@ -732,6 +913,76 @@ def page_search(data: dict) -> str:
 # --------------------------------------------------------------------------
 # 关于本库
 # --------------------------------------------------------------------------
+def page_awards(data: dict) -> str:
+    """共青团与青年工作课题栏目：特别贡献奖课题清单。"""
+    a = data.get("awards", {}) or {}
+    items = a.get("items", []) or []
+    rows = "\n".join(
+        "        <tr>"
+        '<td class="c-no">%d</td>'
+        '<td class="c-title">%s</td>'
+        '<td class="c-owner">%s</td>'
+        "</tr>" % (it["no"], it["title"], it.get("owner") or "—")
+        for it in items
+    )
+    body = """  <section class="doc-head">
+    <div class="wrap">
+      <div class="crumb">
+        <a href="index.html">首页</a><span class="sep">/</span><span>共青团与青年工作课题</span>
+      </div>
+      <h1>共青团与青年工作课题</h1>
+      <p class="lede">
+        %(subtitle)s。以下为理论研究室发布的特别贡献奖课题清单，共 %(n)d 项，
+        涵盖青年理想信念、青年发展政策、共青团工作、思政育人、乡村振兴等方向。
+      </p>
+      <div class="doc-head-meta">
+        <span><svg class="ic" viewBox="0 0 24 24"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22.5Z"/><path d="M8 7h8M8 11h6"/></svg>%(n)d 项课题</span>
+        <span><svg class="ic" viewBox="0 0 24 24"><path d="M4 19.5V6a2 2 0 0 1 2-2h9l5 5v10.5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M14 4v6h6"/></svg>来源：%(source)s</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="notice notice-info" style="margin-bottom:24px">
+        <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+        <div>本页仅著录课题名称与负责人，用于了解研究方向与选题分布；
+          课题作品的完整文本未在本站公开。</div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table class="data" style="min-width:640px">
+            <thead>
+              <tr>
+                <th scope="col" style="width:76px">序号</th>
+                <th scope="col">课题名称</th>
+                <th scope="col" style="width:130px">负责人</th>
+              </tr>
+            </thead>
+            <tbody>
+%(rows)s
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+""" % {
+        "subtitle": a.get("subtitle", "共青团与青年工作课题"),
+        "n": len(items),
+        "source": a.get("source", "—"),
+        "rows": rows,
+    }
+    return shell(
+        "共青团与青年工作课题 · 北大青年纵横",
+        "北京大学“挑战杯”系列赛事特别贡献奖（校团委理论研究室）课题清单。",
+        "awards.html",
+        body,
+        data["site"],
+    )
+
+
 def page_about(data: dict) -> str:
     s = data["stats"]
     q = data.get("quality", {})
@@ -969,6 +1220,7 @@ def main():
         "database.html": page_database(data),
         "issue.html": page_issue(data),
         "leaders.html": page_leaders(data),
+        "awards.html": page_awards(data),
         "search.html": page_search(data),
         "about.html": page_about(data),
         "404.html": page_404(data),
